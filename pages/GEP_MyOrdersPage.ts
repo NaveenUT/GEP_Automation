@@ -1,7 +1,7 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
-/** Account Dashboard > Orders (submitted orders). */
+/** Account Dashboard > Orders (submitted orders and order history search). */
 export class GEP_MyOrdersPage extends BasePage {
   // Tosca: Click on Account Dashboard > Account Dashboard
   get accountDashboardLink(): Locator {
@@ -28,6 +28,26 @@ export class GEP_MyOrdersPage extends BasePage {
     return this.todo('GEP_MyOrdersPage.firstRowOrderNumberCell', 'Orders | Submitted order > Submitted order TABLE > $1 > $1');
   }
 
+  // Tosca: Orders & Returns > close   | optional overlay on the orders page
+  get ordersReturnsPopupCloseButton(): Locator {
+    return this.todo('GEP_MyOrdersPage.ordersReturnsPopupCloseButton', 'Orders & Returns > close');
+  }
+
+  // Tosca: My Account | My Orders | Search Orders > Search INput box (also " Search the Order")
+  get orderHistorySearchInput(): Locator {
+    return this.todo('GEP_MyOrdersPage.orderHistorySearchInput', 'My Account | My Orders | Search Orders > Search INput box');
+  }
+
+  // Tosca: My Account | My Orders | Search Orders > search_btn   | hint: may be id/class "search_btn" (unverified)
+  get orderHistorySearchButton(): Locator {
+    return this.todo('GEP_MyOrdersPage.orderHistorySearchButton', 'My Account | My Orders | Search Orders > search_btn');
+  }
+
+  // Tosca: Orders > OrderNumberPass in Buffer   | order number link, located by the captured order number
+  orderNumberLink(orderNumber: string): Locator {
+    return this.todo('GEP_MyOrdersPage.orderNumberLink', `Orders > OrderNumberPass in Buffer (${orderNumber})`);
+  }
+
   /** Tosca: Orders Tab > Navigate to My Orders Page. */
   async navigateToOrders(): Promise<void> {
     await this.accountDashboardLink.click();
@@ -44,5 +64,20 @@ export class GEP_MyOrdersPage extends BasePage {
   /** Tosca: Submitted order TABLE > $1 > $1 (VisibleInnerText == Ordernumber). */
   async expectOrderInFirstRow(orderNumber: string): Promise<void> {
     await expect(this.firstRowOrderNumberCell).toHaveText(orderNumber);
+  }
+
+  /** Tosca: Search the Order -My Orders Page. Closes the Orders & Returns overlay first if it is shown. */
+  async searchOrderHistory(orderNumber: string): Promise<void> {
+    await this.clickIfVisible(this.ordersReturnsPopupCloseButton, 3000);
+    await expect(this.orderHistorySearchInput).toBeVisible();
+    await this.orderHistorySearchInput.fill(orderNumber);
+    await this.orderHistorySearchButton.click();
+  }
+
+  /** Tosca: Navigate to viewandtrackmyorders for orderId Buffer. Opens the order's View & Track page. */
+  async openOrderViewAndTrack(orderNumber: string): Promise<void> {
+    const orderLink = this.orderNumberLink(orderNumber);
+    await expect(orderLink).toBeVisible();
+    await orderLink.click();
   }
 }

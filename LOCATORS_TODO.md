@@ -1,4 +1,4 @@
-# Locators to fill – GEP2-36899
+# Locators to fill – GEP2-36899, GEP2-22324
 
 Every locator below is a `this.todo(...)` placeholder. Fill them with `/tosca-to-pom fill <BASE_URL> [PageName]` once the site URL is confirmed.
 
@@ -59,3 +59,13 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GEP_MyOrdersPage | submittedOrderSearchInput | Orders \| Submitted order > Submitted order Search | – | TODO | – | – |
 | GEP_MyOrdersPage | submittedOrderSearchButton | Orders \| Submitted order > Submitted order search-button | – | TODO | – | – |
 | GEP_MyOrdersPage | firstRowOrderNumberCell | Orders \| Submitted order > Submitted order TABLE > $1 > $1 | row 1, col 1 | TODO | – | – |
+| GEP_ProductDetailPage | uomUnitOption | PDP \| Unite | GEP2-22324; GenX/GenZ; no controls in export | TODO | – | – |
+| GEP_ProductDetailPage | uomSelector | Verify Price Changes when UOM is changed_Reference > UOM selector | GEP2-22324; GenY; reusable block not in export | Needs review | – | – |
+| GEP_ProductDetailPage | secondaryUomOption | Verify Price Changes when UOM is changed_Reference > secondary UOM option | GEP2-22324; GenY; reusable block not in export | Needs review | – | – |
+| GEP_ProductDetailPage | productPrice | Verify Price Changes when UOM is changed_Reference > product price | GEP2-22324; GenY; reusable block not in export | Needs review | – | – |
+| GEP_MyOrdersPage | ordersReturnsPopupCloseButton | Orders & Returns > close | GEP2-22324; optional overlay | TODO | – | – |
+| GEP_MyOrdersPage | orderHistorySearchInput | My Account \| My Orders \| Search Orders > Search INput box | GEP2-22324 | TODO | – | – |
+| GEP_MyOrdersPage | orderHistorySearchButton | My Account \| My Orders \| Search Orders > search_btn | GEP2-22324; id/class "search_btn"? | TODO | – | – |
+| GEP_MyOrdersPage | orderNumberLink(orderNumber) | Orders > OrderNumberPass in Buffer | GEP2-22324; dynamic, by order number | TODO | – | – |
+| GEP_OrderViewAndTrackPage | primaryUomForProduct(productId) | HenrySchein\| My Orders \| View&Track > Product In Order Page - Primary UOM | GEP2-22324; dynamic, by product ID | TODO | – | – |
+| GEP_OrderViewAndTrackPage | secondaryUomForProduct(productId) | Validate Presence of Primary&Secondary UOM_Reference > Secondary UOM | GEP2-22324; GenY; reusable block not in export | Needs review | – | – |

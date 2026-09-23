@@ -50,4 +50,8 @@ export const config = {
   get productId(): string {
     return requireEnv('PRODUCT_ID');
   },
+  // Tosca: TDM Condition == 'Productwith2UOM' (product sold in a primary and a secondary UOM)
+  get uomProductId(): string {
+    return requireEnv('UOM_PRODUCT_ID');
+  },
 };

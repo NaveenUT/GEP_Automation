@@ -9,6 +9,7 @@ import { GEP_ShippingBillingPage } from '../pages/GEP_ShippingBillingPage';
 import { GEP_ReviewOrderPage } from '../pages/GEP_ReviewOrderPage';
 import { GEP_OrderConfirmationPage } from '../pages/GEP_OrderConfirmationPage';
 import { GEP_MyOrdersPage } from '../pages/GEP_MyOrdersPage';
+import { GEP_OrderViewAndTrackPage } from '../pages/GEP_OrderViewAndTrackPage';
 
 type GEPFixtures = {
   homePage: GEP_HomePage;
@@ -21,6 +22,7 @@ type GEPFixtures = {
   reviewOrderPage: GEP_ReviewOrderPage;
   orderConfirmationPage: GEP_OrderConfirmationPage;
   myOrdersPage: GEP_MyOrdersPage;
+  orderViewAndTrackPage: GEP_OrderViewAndTrackPage;
 };
 
 /**
@@ -38,6 +40,7 @@ export const test = base.extend<GEPFixtures>({
   reviewOrderPage: async ({ page }, use) => use(new GEP_ReviewOrderPage(page)),
   orderConfirmationPage: async ({ page }, use) => use(new GEP_OrderConfirmationPage(page)),
   myOrdersPage: async ({ page }, use) => use(new GEP_MyOrdersPage(page)),
+  orderViewAndTrackPage: async ({ page }, use) => use(new GEP_OrderViewAndTrackPage(page)),
 });
 
 export { expect };

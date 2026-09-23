@@ -12,6 +12,11 @@ export function randomDigits(length: number): string {
   return first + rest;
 }
 
+/** Tosca: {RND[min][max]} (whole number between min and max, inclusive) */
+export function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 /** Tosca (GenY "To remove any buffers"): appends ?<random>=<random> so Akamai doesn't serve a cached page. */
 export function withCacheBuster(url: string): string {
   if (!url) return url;

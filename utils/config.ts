@@ -50,4 +50,8 @@ export const config = {
   get productId(): string {
     return requireEnv('PRODUCT_ID');
   },
+  // Tosca: TDM Condition == 'recurringFrequency' (option shown in the recurring frequency dropdown)
+  get recurringFrequency(): string {
+    return requireEnv('RECURRING_FREQUENCY');
+  },
 };

@@ -1,4 +1,4 @@
-# Locators to fill – GEP2-36899
+# Locators to fill – GEP2-36899, GEP2-18257
 
 Every locator below is a `this.todo(...)` placeholder. Fill them with `/tosca-to-pom fill <BASE_URL> [PageName]` once the site URL is confirmed.
 
@@ -35,7 +35,12 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GEP_SearchResultsPage | firstProductName | SRP \| Navigate to First Product > Product name | – | TODO | – | – |
 | GEP_SearchResultsPage | firstProductId | SRP \| Navigate to First Product > Product ID | – | TODO | – | – |
 | GEP_ProductDetailPage | quantityInput | PDP\|QuantityInput > quantity-box | id "quantity-box"? | TODO | – | – |
-| GEP_ProductDetailPage | addToCartButton | Add to cart > PDP add to cart | – | TODO | – | – |
+| GEP_ProductDetailPage | addToCartButton | Add to cart > PDP add to cart (also PDP \| Add To Cart > Add To Cart) | – | TODO | – | – |
+| GEP_ProductDetailPage | comDropdown | PDP\|COMDropdown > Dropdown Required* | GEP2-18257; product-dependent | TODO | – | – |
+| GEP_ProductDetailPage | comDropdownUsersOption | Select the dropdown value > users | GEP2-18257 | TODO | – | – |
+| GEP_ProductDetailPage | rapideFixerTypeOption | Click FixerType > Rapide Fixer | GEP2-18257; FR only | TODO | – | – |
+| GEP_ProductDetailPage | backorderModal | Verify the Backorder Modal is displayed > Modal | GEP2-18257 | TODO | – | – |
+| GEP_ProductDetailPage | backorderModalAddToCartButton | Click Add to cart in Backorder Modal > Add To Cart | GEP2-18257 | TODO | – | – |
 | GEP_ShoppingCartPage | miniCartItemCode | Waiton for ItemCode to display > Item code goes here | – | TODO | – | – |
 | GEP_ShoppingCartPage | guestViewCartButton | Shopping Cart\|GuestCartIcon > View Cart | – | TODO | – | – |
 | GEP_ShoppingCartPage | loggedInViewCartButton | Shopping Cart\|LoggedInCartIcon > DIV | – | TODO | – | – |
@@ -51,6 +56,15 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GEP_ShippingBillingPage | poNumberAutomaticInput | Enter PO Number > PO# Automatic | GenX | TODO | – | – |
 | GEP_ShippingBillingPage | reviewOrderButton | Click on Review Order > Review Order | – | TODO | – | – |
 | GEP_ShippingBillingPage | budgetOverlaySubmitOrderButton | Shipping & Billing \| SubmitOrder > Submit Order | – | TODO | – | – |
+| GEP_ShippingBillingPage | recurringCartTab | Select Recurring Tab > RECURRING | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | defaultShippingPopupConfirmButton | Shipping & Billing- Default shipping popup > Confirm | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringOrderNameInput | Enter the Order and order count > Order Name | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringNumberOfOrdersInput | Enter the Order and order count > NumberOfOrders | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringFrequencyDropdown | Click Frequency selector dropdown > Fre | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringFrequencyOption(frequency) | Select the frequency value > FrequencyValue | GEP2-18257; parameterised by RECURRING_FREQUENCY | TODO | – | – |
+| GEP_ShippingBillingPage | recurringStartDateCalendarButton | Open Calendar > Open calendar (also Recurring Order Date Picker - Calendar) | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringStartDateCalendarBody | Click on dateselector Body > TBODY (also Recurring Order Start Date Body Selector) | GEP2-18257 | TODO | – | – |
+| GEP_ShippingBillingPage | recurringStartDateConfirmButton | Click on Confirm Button > Confirm (also Recurring Order Start Date Confirm) | GEP2-18257 | TODO | – | – |
 | GEP_ReviewOrderPage | submitYourOrderButton | Review Order \| SubmitOrder > Submit Your Order | – | TODO | – | – |
 | GEP_OrderConfirmationPage | orderSubmittedMessage | Checkout \| Order Confirmation > Your order has been submitted ! | – | TODO | – | – |
 | GEP_OrderConfirmationPage | orderNumberText | Order Number > Order Number | – | TODO | – | – |
@@ -59,3 +73,8 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GEP_MyOrdersPage | submittedOrderSearchInput | Orders \| Submitted order > Submitted order Search | – | TODO | – | – |
 | GEP_MyOrdersPage | submittedOrderSearchButton | Orders \| Submitted order > Submitted order search-button | – | TODO | – | – |
 | GEP_MyOrdersPage | firstRowOrderNumberCell | Orders \| Submitted order > Submitted order TABLE > $1 > $1 | row 1, col 1 | TODO | – | – |
+| GEP_MyOrdersPage | futureAndRecurringTab | Recurring Orders > Future & Recurring | GEP2-18257 | TODO | – | – |
+| GEP_MyOrdersPage | recurringOrderSearchInput | Search the Order -RecurringOrderTab_GenZ_Reference > (search input) | GEP2-18257; reusable block not in export | Needs review | – | – |
+| GEP_MyOrdersPage | recurringOrderSearchButton | Search the Order -RecurringOrderTab_GenZ_Reference > (search button) | GEP2-18257; reusable block not in export | Needs review | – | – |
+| GEP_MyOrdersPage | recurringOrderFirstRowOrderNumberCell | Search the Order -RecurringOrderTab_GenZ_Reference > (row 1, order number) | GEP2-18257; reusable block not in export | Needs review | – | – |
+| GEP_MyOrdersPage | manageUpcomingButton | RecurringOrder\|ManageUpcoming > Manage Upcoming | GEP2-18257 | TODO | – | – |

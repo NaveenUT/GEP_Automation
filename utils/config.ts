@@ -50,4 +50,8 @@ export const config = {
   get productId(): string {
     return requireEnv('PRODUCT_ID');
   },
+  // Tosca: TDM Condition == 'OCOrderStatus' (expected status of a newly submitted order)
+  get expectedOrderStatus(): string {
+    return requireEnv('EXPECTED_ORDER_STATUS');
+  },
 };

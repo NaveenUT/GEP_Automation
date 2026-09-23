@@ -60,6 +60,11 @@ export class GEP_Popups extends BasePage {
     );
   }
 
+  // Tosca: Orders & Returns > close   | overlay on the My Orders page
+  get ordersAndReturnsCloseButton(): Locator {
+    return this.todo('GEP_Popups.ordersAndReturnsCloseButton', 'Orders & Returns > close');
+  }
+
   /** Tosca: FR popup / "Launch popup - confirm button" (Confirmar). */
   async confirmLaunchPopup(): Promise<boolean> {
     return this.clickIfVisible(this.launchConfirmButton);
@@ -95,5 +100,10 @@ export class GEP_Popups extends BasePage {
   async closeFeedbackSurvey(): Promise<boolean> {
     if (await this.clickIfVisible(this.feedbackSurveyCloseAltButton, 3000)) return true;
     return this.clickIfVisible(this.feedbackSurveyCloseButton, 3000);
+  }
+
+  /** Tosca: Search the Order -My Orders Page > If "Orders & Returns" close is visible, click it. */
+  async closeOrdersAndReturnsPopup(): Promise<boolean> {
+    return this.clickIfVisible(this.ordersAndReturnsCloseButton, 3000);
   }
 }

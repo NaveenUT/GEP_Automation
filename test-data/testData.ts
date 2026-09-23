@@ -14,3 +14,14 @@ export const GEP2_36899 = {
   // Tosca: IT Payment method > Payment method (GenZ, IT only)
   itPaymentMethod: 'Condizione di Pagamento Abituale',
 } as const;
+
+export const GEP2_18230 = {
+  tcId: 'GEP2-18230',
+  title: 'E2E of The Reorder option from an order on the Order History page',
+  // Tosca: Shipping & Billing | PO number > PO# value ({SENDKEYS["3787329720"]}, non-GenX regions)
+  poNumber: '3787329720',
+  // Tosca: Enter the Answer > Your answer* ({SENDKEYS["Test"]})
+  securityAnswer: 'Test',
+  // Tosca: IT Payment method > Payment method (GenZ, IT only)
+  itPaymentMethod: 'Condizione di Pagamento Abituale',
+} as const;

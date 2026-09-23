@@ -1,4 +1,4 @@
-# Locators to fill – GEP2-36899
+# Locators to fill – GEP2-36899, GEP2-18230
 
 Every locator below is a `this.todo(...)` placeholder. Fill them with `/tosca-to-pom fill <BASE_URL> [PageName]` once the site URL is confirmed.
 
@@ -59,3 +59,17 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GEP_MyOrdersPage | submittedOrderSearchInput | Orders \| Submitted order > Submitted order Search | – | TODO | – | – |
 | GEP_MyOrdersPage | submittedOrderSearchButton | Orders \| Submitted order > Submitted order search-button | – | TODO | – | – |
 | GEP_MyOrdersPage | firstRowOrderNumberCell | Orders \| Submitted order > Submitted order TABLE > $1 > $1 | row 1, col 1 | TODO | – | – |
+
+## Added for GEP2-18230 (Reorder from Order History)
+
+The GEP2-18230 flow also uses the locators above for the header, login, popups, cart, checkout and order confirmation.
+
+| Page | Getter | Tosca module > control | Hint | Status | Locator | Source |
+|---|---|---|---|---|---|---|
+| GEP_MyOrdersPage | myOrdersSearchInput | My Account \| My Orders \| Search Orders > Search INput box | may equal submittedOrderSearchInput | TODO | – | – |
+| GEP_MyOrdersPage | myOrdersSearchButton | My Account \| My Orders \| Search Orders > search_btn | id/class "search_btn"? | TODO | – | – |
+| GEP_MyOrdersPage | viewAndTrackButtons | Orders \| View&Track > View & Track | should match every row; spec uses `.first()` | TODO | – | – |
+| GEP_OrderDetailsPage | reorderLink | OrderDetails\|Reorder > Reorder | – | TODO | – | – |
+| GEP_OrderDetailsPage | reorderConfirmModalCloseButton | OrderDetails\|ReorderConfirmModal > close | – | TODO | – | – |
+| GEP_OrderDetailsPage | orderStatusText | Fetch the order status in order details page > Status | – | TODO | – | – |
+| GEP_Popups | ordersAndReturnsCloseButton | Orders & Returns > close | My Orders overlay | TODO | – | – |

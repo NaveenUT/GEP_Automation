@@ -7,7 +7,7 @@ test.describe('GEP Checkout', () => {
   // Full checkout on the QA site is slow (the Shipping & Billing page alone can take a minute to load).
   test.describe.configure({ timeout: 10 * 60 * 1000 });
 
-  test('GEP2-36899 | Verify submitted order in My order page @GEP @checkout @regression', async ({
+  test('GEP2-36899 | Verify submitted order in My order page @GEP2-36899 @GEP @checkout @regression', async ({
     homePage,
     loginPage,
     popups,
@@ -26,7 +26,7 @@ test.describe('GEP Checkout', () => {
     let orderNumber = '';
 
     await test.step('Precondition: launch the HS website and clear launch popups', async () => {
-      await homePage.launch(region, country, config.domain);
+      await homePage.launchSite(region, country, config.domain);
     });
 
     await test.step('Precondition: sign in', async () => {
@@ -39,58 +39,58 @@ test.describe('GEP Checkout', () => {
     await test.step('Clear the cart if it is not empty', async () => {
       if ((await homePage.getCartItemCount()) > 0) {
         // The header cart icon opens the shopping cart page directly.
-        await homePage.openMiniCart();
+        await homePage.openCartFromHeader();
         await shoppingCartPage.clearCart();
       }
     });
 
     await test.step('Search for the product and open its PDP', async () => {
       await homePage.searchProduct(testConfig.productId);
-      await searchResultsPage.openProduct(testConfig.productId);
+      await searchResultsPage.openProductFromResults(testConfig.productId);
     });
 
     await test.step('Set the quantity and add to cart', async () => {
-      await productDetailPage.setQuantity(GEP2_36899.quantity);
-      await productDetailPage.addToCart();
+      await productDetailPage.enterQuantity(GEP2_36899.quantity);
+      await productDetailPage.clickAddToCart();
       await homePage.expectCartNotEmpty();
     });
 
     await test.step('Open the shopping cart', async () => {
-      await homePage.openMiniCart();
-      await shoppingCartPage.expectItemInMiniCart();
+      await homePage.openCartFromHeader();
+      await shoppingCartPage.expectCartPageLoaded();
     });
 
     await test.step('Proceed to Shipping & Billing', async () => {
       await shoppingCartPage.proceedToShippingAndBilling();
-      await shippingBillingPage.waitForPageLoaded();
-      await shippingBillingPage.selectImmediateOrderIfShown();
+      await shippingBillingPage.expectPageLoaded();
+      await shippingBillingPage.selectImmediateScheduleIfShown();
     });
 
     await test.step('Choose the payment method and enter the PO number', async () => {
       await shippingBillingPage.selectPaymentMethod(region, country, GEP2_36899.itPaymentMethod);
       // UK has a single PO# field; the provided test data uses a fixed PO for every region.
-      await shippingBillingPage.fillPoNumber(GEP2_36899.poNumber);
+      await shippingBillingPage.enterPoNumber(GEP2_36899.poNumber);
     });
 
     await test.step('Review and submit the order', async () => {
       await shippingBillingPage.clickReviewOrder();
-      await shippingBillingPage.confirmBudgetOverlayIfShown();
+      await shippingBillingPage.confirmBudgetDialogIfShown();
       await reviewOrderPage.submitOrder();
     });
 
     await test.step('Verify the order confirmation and capture the order number', async () => {
       // Tosca: If GenX wait > Close Customer FeedBack survey popup
-      if (region === 'genx') await popups.closeFeedbackSurvey();
+      if (region === 'genx') await popups.closeFeedbackSurveyIfShown();
       await orderConfirmationPage.expectOrderSubmitted();
       orderNumber = await orderConfirmationPage.getOrderNumber();
       console.log(`GEP2-36899 | Submitted order number: ${orderNumber}`);
     });
 
     await test.step('Verify the order is listed in My Orders', async () => {
-      await myOrdersPage.openMyOrdersFromHeader();
+      await myOrdersPage.openMyOrdersViaHeader();
       await myOrdersPage.openSubmittedOrdersTab();
       await myOrdersPage.searchSubmittedOrder(orderNumber);
-      await myOrdersPage.expectOrderInFirstRow(orderNumber);
+      await myOrdersPage.expectSubmittedOrderListed(orderNumber);
     });
 
     await test.step('Post-condition: sign out', async () => {
@@ -99,7 +99,7 @@ test.describe('GEP Checkout', () => {
     });
   });
 
-  test('GEP2-18257 | Verify user able to see the orders on Future & Recurring Tab @GEP @checkout @recurring @regression', async ({
+  test('GEP2-18257 | Verify user able to see the orders on Future & Recurring Tab @GEP2-18257 @GEP @checkout @recurring @regression', async ({
     homePage,
     loginPage,
     popups,
@@ -116,7 +116,7 @@ test.describe('GEP Checkout', () => {
     let orderNumber = '';
 
     await test.step('Precondition: launch the HS website and clear launch popups', async () => {
-      await homePage.launch(region, country, config.domain);
+      await homePage.launchSite(region, country, config.domain);
     });
 
     await test.step('Precondition: sign in', async () => {
@@ -129,41 +129,41 @@ test.describe('GEP Checkout', () => {
     await test.step('Clear the cart if it is not empty', async () => {
       if ((await homePage.getCartItemCount()) > 0) {
         // The header cart icon opens the shopping cart page directly.
-        await homePage.openMiniCart();
+        await homePage.openCartFromHeader();
         await shoppingCartPage.clearCart();
       }
     });
 
     await test.step('Search for the product and open its PDP', async () => {
       await homePage.searchProduct(config.productId);
-      await searchResultsPage.openProduct(config.productId);
+      await searchResultsPage.openProductFromResults(config.productId);
     });
 
     await test.step('Select PDP options and add to cart', async () => {
-      await productDetailPage.selectComValueIfRequired();
+      await productDetailPage.selectComValueIfShown();
       await productDetailPage.selectFixerTypeIfRequired(country);
-      await productDetailPage.addToCart();
+      await productDetailPage.clickAddToCart();
       await productDetailPage.confirmBackorderIfShown();
       await homePage.expectCartNotEmpty();
     });
 
     await test.step('Open the shopping cart', async () => {
-      await homePage.openMiniCart();
-      await shoppingCartPage.expectItemInMiniCart();
+      await homePage.openCartFromHeader();
+      await shoppingCartPage.expectCartPageLoaded();
     });
 
     await test.step('Proceed to Shipping & Billing', async () => {
       await shoppingCartPage.proceedToShippingAndBilling();
-      await shippingBillingPage.waitForPageLoaded();
+      await shippingBillingPage.expectPageLoaded();
     });
 
     await test.step('Switch to a Recurring order', async () => {
       await shippingBillingPage.clearPoNumber();
-      await shippingBillingPage.switchToRecurringCart();
+      await shippingBillingPage.selectRecurringSchedule();
     });
 
-    await test.step('Choose the payment method and enter the PO number', async () => {
-      await shippingBillingPage.fillPoNumber(GEP2_18257.poNumber);
+    await test.step('Enter the PO number', async () => {
+      await shippingBillingPage.enterPoNumber(GEP2_18257.poNumber);
      // await shippingBillingPage.selectPaymentMethod(region, country, GEP2_18257.itPaymentMethod);
     });
 
@@ -177,31 +177,31 @@ test.describe('GEP Checkout', () => {
     });
 
     // await test.step('Choose the payment method and enter the PO number', async () => {
-    //   await shippingBillingPage.fillPoNumber(GEP2_18257.poNumber);
+    //   await shippingBillingPage.enterPoNumber(GEP2_18257.poNumber);
     //  // await shippingBillingPage.selectPaymentMethod(region, country, GEP2_18257.itPaymentMethod);
     // });
 
     await test.step('Review and submit the order', async () => {
       await shippingBillingPage.clickReviewOrder();
-      await shippingBillingPage.confirmBudgetOverlayIfShown();
+      await shippingBillingPage.confirmBudgetDialogIfShown();
       await reviewOrderPage.submitOrder();
     });
 
     await test.step('Verify the order confirmation and capture the order number', async () => {
       // Tosca: If GenX wait > Close Customer FeedBack survey popup
-      if (region === 'genx') await popups.closeFeedbackSurvey();
+      if (region === 'genx') await popups.closeFeedbackSurveyIfShown();
       await orderConfirmationPage.expectOrderSubmitted();
       orderNumber = await orderConfirmationPage.getOrderNumber();
     });
 
     await test.step('Open the Future & Recurring tab in My Orders', async () => {
-      await myOrdersPage.openMyOrdersFromHeader();
-      await myOrdersPage.openFutureAndRecurringTab();
+      await myOrdersPage.openMyOrdersViaHeader();
+      await myOrdersPage.openFutureRecurringTab();
     });
 
     await test.step('Verify the recurring order is listed with Manage Upcoming', async () => {
       await myOrdersPage.searchRecurringOrder(orderNumber);
-      await myOrdersPage.expectRecurringOrderInFirstRow(orderNumber);
+      await myOrdersPage.expectRecurringOrderListed(orderNumber);
       await myOrdersPage.expectManageUpcomingVisible();
     });
 

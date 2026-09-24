@@ -2,29 +2,29 @@ import { Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 /** Optional popups and overlays. Every action is safe to call when the popup is absent. */
-export class GEP_Popups extends BasePage {
+export class GepPopups extends BasePage {
   // Tosca: Launch popup - confirm button > Confirmar
-  get launchConfirmButton(): Locator {
+  get launchPopupConfirmButton(): Locator {
     return this.page.getByRole('button', { name: 'Confirmar' });
   }
 
   // Tosca: Cookie | AcceptAll > Accept All
-  get cookieAcceptAllButton(): Locator {
+  get cookieDialogAcceptAllButton(): Locator {
     return this.page.getByRole('dialog', { name: 'Cookie Settings' }).getByRole('button', { name: 'Accept all' });
   }
 
-  // Tosca: Accept Cookies > Accept All   | may be the same element as cookieAcceptAllButton (unverified)
-  get acceptCookiesAllButton(): Locator {
+  // Tosca: Accept Cookies > Accept All   | may be the same element as cookieDialogAcceptAllButton (unverified)
+  get cookieAcceptAllFallbackButton(): Locator {
     return this.page.getByRole('button', { name: 'Accept all' });
   }
 
   // Tosca: Click on Close for Ad > Close icon
   get adPopupCloseIcon(): Locator {
-    return this.todo('GEP_Popups.adPopupCloseIcon', 'Click on Close for Ad > Close icon');
+    return this.todo('GepPopups.adPopupCloseIcon', 'Click on Close for Ad > Close icon');
   }
 
   // Tosca: Shopping Cart | Free Item Popup > Continue Without Free Item
-  get continueWithoutFreeItemButton(): Locator {
+  get freeItemContinueWithoutButton(): Locator {
     return this.page.locator('[data-test-id="expressCheckoutPopup.ContinueWithoutBtnText4"]');
   }
 
@@ -49,38 +49,38 @@ export class GEP_Popups extends BasePage {
   }
 
   /** Tosca: FR popup / "Launch popup - confirm button" (Confirmar). */
-  async confirmLaunchPopup(): Promise<boolean> {
-    return this.clickIfVisible(this.launchConfirmButton);
+  async confirmLaunchPopupIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.launchPopupConfirmButton);
   }
 
   /** Tosca: Accept the Cookie. The banner can match either cookie module, so both are tried. */
-  async acceptCookies(): Promise<boolean> {
-    if (await this.clickIfVisible(this.cookieAcceptAllButton, 10000)) return true;
-    return this.clickIfVisible(this.acceptCookiesAllButton);
+  async acceptCookiesIfShown(): Promise<boolean> {
+    if (await this.clickIfVisible(this.cookieDialogAcceptAllButton, 10000)) return true;
+    return this.clickIfVisible(this.cookieAcceptAllFallbackButton);
   }
 
   /** Tosca: Close the ad popup. */
-  async closeAdPopup(): Promise<boolean> {
+  async closeAdPopupIfShown(): Promise<boolean> {
     return this.clickIfVisible(this.adPopupCloseIcon);
   }
 
   /** Tosca: Verify Free Item Visible then select. */
-  async continueWithoutFreeItem(): Promise<boolean> {
-    return this.clickIfVisible(this.continueWithoutFreeItemButton);
+  async continueWithoutFreeItemIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.freeItemContinueWithoutButton);
   }
 
   /** Tosca: If- License Popup Displayed. */
-  async skipLicense(): Promise<boolean> {
+  async skipLicenseIfShown(): Promise<boolean> {
     return this.clickIfVisible(this.licenseSkipAndCompleteLaterButton);
   }
 
   /** Tosca: Close Controlled Substances Form. */
-  async skipControlledSubstancesForm(): Promise<boolean> {
+  async skipControlledSubstancesIfShown(): Promise<boolean> {
     return this.clickIfVisible(this.controlledSubstancesConfirmSkipButton);
   }
 
   /** Tosca: Close Customer FeedBack survey popup (GenX order confirmation). */
-  async closeFeedbackSurvey(): Promise<boolean> {
+  async closeFeedbackSurveyIfShown(): Promise<boolean> {
     if (await this.clickIfVisible(this.feedbackSurveyCloseAltButton, 3000)) return true;
     return this.clickIfVisible(this.feedbackSurveyCloseButton, 3000);
   }

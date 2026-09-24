@@ -15,35 +15,35 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export class GEP_ShippingBillingPage extends BasePage {
+export class GepShippingBillingPage extends BasePage {
   // Tosca: GenX|Shipping & Billing | Payment method > downward arrow
-  get genXPaymentMethodArrow(): Locator {
+  get paymentMethodDropdown(): Locator {
     return this.page.locator('mat-select[formcontrolname="paymentformcontrolvalue"]');
   }
 
   // Tosca: GenX|Shipping & Billing | Payment method > Bill on Account
-  get genXBillOnAccountOption(): Locator {
+  get paymentMethodBillOnAccountOption(): Locator {
     return this.page.getByRole('option', { name: 'Bill On Account' });
   }
 
   // Tosca: Shipping & Billing chose Payment > downward arrow
-  get genYPaymentMethodArrow(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genYPaymentMethodArrow', 'Shipping & Billing chose Payment > downward arrow');
+  get paymentMethodDropdownGenY(): Locator {
+    return this.todo('GepShippingBillingPage.paymentMethodDropdownGenY', 'Shipping & Billing chose Payment > downward arrow');
   }
 
   // Tosca: Shipping & Billing chose Payment > Bill on Account_GenY
-  get genYBillOnAccountOption(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genYBillOnAccountOption', 'Shipping & Billing chose Payment > Bill on Account_GenY');
+  get paymentMethodBillOnAccountOptionGenY(): Locator {
+    return this.todo('GepShippingBillingPage.paymentMethodBillOnAccountOptionGenY', 'Shipping & Billing chose Payment > Bill on Account_GenY');
   }
 
   // Tosca: IT Payment method / Select 1st payment method > Payment method   | GenZ; assumed to be a native <select> (unverified)
-  get genZPaymentMethodSelect(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genZPaymentMethodSelect', 'IT Payment method / Select 1st payment method > Payment method');
+  get paymentMethodDropdownGenZ(): Locator {
+    return this.todo('GepShippingBillingPage.paymentMethodDropdownGenZ', 'IT Payment method / Select 1st payment method > Payment method');
   }
 
   // Tosca: Shipping and billing | Credit Card pop up IT > Close
-  get itCreditCardPopupCloseButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.itCreditCardPopupCloseButton', 'Shipping and billing | Credit Card pop up IT > Close');
+  get creditCardDialogCloseButtonIT(): Locator {
+    return this.todo('GepShippingBillingPage.creditCardDialogCloseButtonIT', 'Shipping and billing | Credit Card pop up IT > Close');
   }
 
   // Tosca: Shipping & Billing | PO number > PO# value (also Enter PO Number > PO# value)
@@ -52,8 +52,8 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   // Tosca: Enter PO Number > PO# Automatic   | GenX only
-  get poNumberAutomaticInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.poNumberAutomaticInput', 'Enter PO Number > PO# Automatic');
+  get poNumberAutomaticInputGenX(): Locator {
+    return this.todo('GepShippingBillingPage.poNumberAutomaticInputGenX', 'Enter PO Number > PO# Automatic');
   }
 
   // Tosca: Click on Review Order > Review Order
@@ -62,22 +62,22 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   // Tosca: Shipping & Billing | SubmitOrder > Submit Order   | budget notification overlay
-  get budgetOverlaySubmitOrderButton(): Locator {
+  get budgetDialogSubmitOrderButton(): Locator {
     return this.page.getByRole('dialog').getByRole('button', { name: 'Submit Order' });
   }
 
   // Shipping & Scheduling > "Immediate" radio (the site remembers the last schedule choice per account)
-  get immediateScheduleOption(): Locator {
+  get immediateScheduleRadio(): Locator {
     return this.page.locator('input[type="radio"][value="IMMEDIATE"]');
   }
 
   // Tosca: Select Recurring Tab > RECURRING   | UK site: "Recurring" radio under Shipping & Scheduling
-  get recurringScheduleOption(): Locator {
+  get recurringScheduleRadio(): Locator {
     return this.page.locator('input[name="scheduleOption"][value="RECURRING"]');
   }
 
   // Tosca: Shipping & Billing- Default shipping popup > Confirm   | not seen on UK site (unverified)
-  get defaultShippingPopupConfirmButton(): Locator {
+  get defaultShippingDialogConfirmButton(): Locator {
     return this.page.getByRole('dialog').getByRole('button', { name: 'Confirm' });
   }
 
@@ -110,23 +110,23 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   // Tosca: Click on dateselector Body > TBODY   | Angular Material calendar overlay (unverified)
-  get recurringStartDateCalendar(): Locator {
+  get recurringStartDateCalendarDialog(): Locator {
     return this.page.locator('mat-calendar');
   }
 
   // Header button of the calendar showing the month on display, e.g. "SEP 2026" (unverified)
   get recurringStartDateCalendarPeriodButton(): Locator {
-    return this.recurringStartDateCalendar.locator('.mat-calendar-period-button');
+    return this.recurringStartDateCalendarDialog.locator('.mat-calendar-period-button');
   }
 
   // Calendar "Next month" arrow (unverified)
   get recurringStartDateCalendarNextButton(): Locator {
-    return this.recurringStartDateCalendar.locator('.mat-calendar-next-button');
+    return this.recurringStartDateCalendarDialog.locator('.mat-calendar-next-button');
   }
 
   // Enabled day cell in the month on display (unverified)
-  recurringStartDateCalendarDay(day: number): Locator {
-    return this.recurringStartDateCalendar
+  recurringStartDateDayButton(day: number): Locator {
+    return this.recurringStartDateCalendarDialog
       .locator('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)')
       .filter({ hasText: new RegExp(`^\\s*${day}\\s*$`) });
   }
@@ -142,7 +142,7 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   /** The page renders before its cart data arrives; Review Order is enabled once it has loaded. */
-  async waitForPageLoaded(): Promise<void> {
+  async expectPageLoaded(): Promise<void> {
     await expect(this.reviewOrderButton).toBeEnabled({ timeout: 90000 });
   }
 
@@ -152,16 +152,16 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   /** Makes sure a normal (Immediate) order is placed, in case the account still has Delayed/Recurring selected. */
-  async selectImmediateOrderIfShown(): Promise<void> {
-    if (await this.isVisibleWithin(this.immediateScheduleOption, 3000)) {
-      await this.immediateScheduleOption.check();
+  async selectImmediateScheduleIfShown(): Promise<void> {
+    if (await this.isVisibleWithin(this.immediateScheduleRadio, 3000)) {
+      await this.immediateScheduleRadio.check();
     }
   }
 
   /** Tosca: Navigate to Recurring cart in Checkout. Also confirms the default shipping popup if it appears. */
-  async switchToRecurringCart(): Promise<void> {
-    await this.recurringScheduleOption.check();
-    await this.clickIfVisible(this.defaultShippingPopupConfirmButton, 3000);
+  async selectRecurringSchedule(): Promise<void> {
+    await this.recurringScheduleRadio.check();
+    await this.clickIfVisible(this.defaultShippingDialogConfirmButton, 3000);
   }
 
   /** Tosca: EnterRecurringCartDetails (order name, frequency, start date, number of orders). */
@@ -172,14 +172,14 @@ export class GEP_ShippingBillingPage extends BasePage {
     await this.recurringFrequencyDropdown.click();
     await this.recurringFrequencyOption(details.frequency).click();
 
-    await this.pickRecurringStartDate(details.startDate);
+    await this.selectRecurringStartDate(details.startDate);
     await this.typeAndBlur(this.recurringNumberOfOrdersInput, String(details.numberOfOrders));
   }
 
   /** Tosca: Chose a Date and click Confirm. Opens the calendar, moves to the date's month and clicks the day. */
-  async pickRecurringStartDate(date: Date): Promise<void> {
+  async selectRecurringStartDate(date: Date): Promise<void> {
     await this.recurringStartDateCalendarButton.click();
-    await expect(this.recurringStartDateCalendar).toBeVisible();
+    await expect(this.recurringStartDateCalendarDialog).toBeVisible();
 
     // The calendar opens on the month of the current value; step forward until the target month shows.
     // First three letters only: matches "SEP 2026" and "September 2026" (en-GB's short name is "Sept").
@@ -190,15 +190,15 @@ export class GEP_ShippingBillingPage extends BasePage {
     }
     await expect(this.recurringStartDateCalendarPeriodButton).toHaveText(target);
 
-    await this.recurringStartDateCalendarDay(date.getDate()).click();
+    await this.recurringStartDateDayButton(date.getDate()).click();
     await this.clickIfVisible(this.recurringStartDateConfirmButton, 2000);
 
-    await expect(this.recurringStartDateCalendar).toBeHidden();
+    await expect(this.recurringStartDateCalendarDialog).toBeHidden();
     await expect(this.recurringStartDateInput).toHaveValue(formatDdMmYyyy(date));
   }
 
   /** Types the PO number into "PO#" (the UK site has a single PO field). */
-  async fillPoNumber(poNumber: string): Promise<void> {
+  async enterPoNumber(poNumber: string): Promise<void> {
     await this.typeAndBlur(this.poNumberInput, poNumber);
   }
 
@@ -221,33 +221,33 @@ export class GEP_ShippingBillingPage extends BasePage {
     switch (region) {
       case 'genx':
         // Tosca: Run Only for Gen X Countries
-        await this.genXPaymentMethodArrow.click();
-        await this.genXBillOnAccountOption.click();
+        await this.paymentMethodDropdown.click();
+        await this.paymentMethodBillOnAccountOption.click();
         break;
       case 'geny':
         // Tosca: Else geny
-        await this.genYPaymentMethodArrow.click();
-        await this.genYBillOnAccountOption.click();
+        await this.paymentMethodDropdownGenY.click();
+        await this.paymentMethodBillOnAccountOptionGenY.click();
         break;
       case 'genz':
         if (country === 'IT') {
           // Tosca: If IT select Condizione di Pagamento Abituale (ValidCountries = IT)
-          await this.clickIfVisible(this.itCreditCardPopupCloseButton);
-          await this.genZPaymentMethodSelect.selectOption({ label: itPaymentMethod });
+          await this.clickIfVisible(this.creditCardDialogCloseButtonIT);
+          await this.paymentMethodDropdownGenZ.selectOption({ label: itPaymentMethod });
         } else {
           // Tosca: Select 1st payment method (#1)
-          await this.genZPaymentMethodSelect.selectOption({ index: 0 });
+          await this.paymentMethodDropdownGenZ.selectOption({ index: 0 });
         }
         break;
     }
   }
 
   /** Tosca: Enter the PO Number. Returns the PO number that was entered. */
-  async enterPoNumber(region: Region, poNumber: string): Promise<string> {
+  async enterPoNumberForRegion(region: Region, poNumber: string): Promise<string> {
     if (region === 'genx') {
       // Tosca: GenX replaces the pre-filled "PO# Automatic" value with a random 7-digit number ({RND[7]})
       const generatedPoNumber = randomDigits(7);
-      await this.poNumberAutomaticInput.fill(generatedPoNumber);
+      await this.poNumberAutomaticInputGenX.fill(generatedPoNumber);
       return generatedPoNumber;
     }
     await expect(this.poNumberInput).toBeEditable();
@@ -264,7 +264,7 @@ export class GEP_ShippingBillingPage extends BasePage {
   }
 
   /** Tosca: Shipping | BudgetNotification | Submit Overlay. Confirms the overlay if it appears. */
-  async confirmBudgetOverlayIfShown(): Promise<boolean> {
-    return this.clickIfVisible(this.budgetOverlaySubmitOrderButton);
+  async confirmBudgetDialogIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.budgetDialogSubmitOrderButton);
   }
 }

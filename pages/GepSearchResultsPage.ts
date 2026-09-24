@@ -1,29 +1,29 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
-export class GEP_SearchResultsPage extends BasePage {
+export class GepSearchResultsPage extends BasePage {
   // Tosca: SRP | Navigate to First Product > Product name
-  get firstProductName(): Locator {
+  get firstResultProductNameText(): Locator {
     return this.page.locator('[data-test-id="product-name"]').first();
   }
 
   // Tosca: SRP | Navigate to First Product > Product ID
-  get firstProductId(): Locator {
+  get firstResultProductIdText(): Locator {
     return this.page.locator('[data-test-id="srp_listview_text_productid"]').first();
   }
 
   /** Tosca: SelectProductinGrid SRP | Navigate to PDP. */
-  async openProduct(productId: string): Promise<void> {
-    await expect(this.firstProductName).toBeVisible();
+  async openProductFromResults(productId: string): Promise<void> {
+    await expect(this.firstResultProductNameText).toBeVisible();
 
     // Tosca: If Searched with product Id, click the Product ID link
-    if (await this.isVisibleWithin(this.firstProductId, 3000)) {
-      await this.firstProductId.click();
+    if (await this.isVisibleWithin(this.firstResultProductIdText, 3000)) {
+      await this.firstResultProductIdText.click();
       return;
     }
 
     // Tosca: Else click the product name when its text equals the product ID
-    await expect(this.firstProductName).toHaveText(productId);
-    await this.firstProductName.click();
+    await expect(this.firstResultProductNameText).toHaveText(productId);
+    await this.firstResultProductNameText.click();
   }
 }

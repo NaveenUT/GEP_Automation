@@ -1,19 +1,19 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
-export class GEP_LoginPage extends BasePage {
+export class GepLoginPage extends BasePage {
   // Tosca: Enter Valid creditionals > Username
-  get usernameInput(): Locator {
+  get loginUsernameInput(): Locator {
     return this.page.locator('[data-test-id="SignInUserNameInput"]');
   }
 
   // Tosca: Enter Valid creditionals > Password
-  get passwordInput(): Locator {
+  get loginPasswordInput(): Locator {
     return this.page.locator('[data-test-id="SignInPasswordInput"]');
   }
 
   // Tosca: Login | SignIn Button > Sign In
-  get signInSubmitButton(): Locator {
+  get loginSignInButton(): Locator {
     return this.page.locator('[data-test-id="sign-in-button"]');
   }
 
@@ -24,33 +24,33 @@ export class GEP_LoginPage extends BasePage {
 
   // Tosca: Enter the Answer > Your answer*
   get securityAnswer1Input(): Locator {
-    return this.todo('GEP_LoginPage.securityAnswer1Input', 'Enter the Answer > Your answer*');
+    return this.todo('GepLoginPage.securityAnswer1Input', 'Enter the Answer > Your answer*');
   }
 
   // Tosca: Click on the security question > Choose second a security question*
   get securityQuestion2Dropdown(): Locator {
     return this.todo(
-      'GEP_LoginPage.securityQuestion2Dropdown',
+      'GepLoginPage.securityQuestion2Dropdown',
       'Click on the security question > Choose second a security question*'
     );
   }
 
   // Tosca: Enter the Answer > Your answer*_1
   get securityAnswer2Input(): Locator {
-    return this.todo('GEP_LoginPage.securityAnswer2Input', 'Enter the Answer > Your answer*_1');
+    return this.todo('GepLoginPage.securityAnswer2Input', 'Enter the Answer > Your answer*_1');
   }
 
   // Tosca: Click on proceed CTA > Proceed
   get securityProceedButton(): Locator {
-    return this.todo('GEP_LoginPage.securityProceedButton', 'Click on proceed CTA > Proceed');
+    return this.todo('GepLoginPage.securityProceedButton', 'Click on proceed CTA > Proceed');
   }
 
   /** Tosca: Enter Username And Password and click login. */
   async login(username: string, password: string): Promise<void> {
-    await expect(this.usernameInput).toBeVisible();
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.signInSubmitButton.click();
+    await expect(this.loginUsernameInput).toBeVisible();
+    await this.loginUsernameInput.fill(username);
+    await this.loginPasswordInput.fill(password);
+    await this.loginSignInButton.click();
   }
 
   /** Tosca: If "Choose a security question*" exists, answer both questions and click Proceed. */

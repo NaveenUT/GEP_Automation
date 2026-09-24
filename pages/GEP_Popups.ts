@@ -4,18 +4,19 @@ import { BasePage } from './BasePage';
 /** Optional popups and overlays. Every action is safe to call when the popup is absent. */
 export class GEP_Popups extends BasePage {
   // Tosca: Launch popup - confirm button > Confirmar
+  // Not shown on the UK site; text-based and unverified for other countries.
   get launchConfirmButton(): Locator {
-    return this.todo('GEP_Popups.launchConfirmButton', 'Launch popup - confirm button > Confirmar');
+    return this.page.getByRole('button', { name: 'Confirmar', exact: true });
   }
 
   // Tosca: Cookie | AcceptAll > Accept All
   get cookieAcceptAllButton(): Locator {
-    return this.todo('GEP_Popups.cookieAcceptAllButton', 'Cookie | AcceptAll > Accept All');
+    return this.page.getByTestId('uc-accept-all-button');
   }
 
-  // Tosca: Accept Cookies > Accept All   | may be the same element as cookieAcceptAllButton (unverified)
+  // Tosca: Accept Cookies > Accept All   | fallback if the banner has no data-testid
   get acceptCookiesAllButton(): Locator {
-    return this.todo('GEP_Popups.acceptCookiesAllButton', 'Accept Cookies > Accept All');
+    return this.page.getByRole('button', { name: /^accept all$/i });
   }
 
   // Tosca: Click on Close for Ad > Close icon
@@ -25,44 +26,32 @@ export class GEP_Popups extends BasePage {
 
   // Tosca: Shopping Cart | Free Item Popup > Continue Without Free Item
   get continueWithoutFreeItemButton(): Locator {
-    return this.todo(
-      'GEP_Popups.continueWithoutFreeItemButton',
-      'Shopping Cart | Free Item Popup > Continue Without Free Item'
-    );
+    return this.page.getByRole('button', { name: /continue without free item/i });
   }
 
   // Tosca: Shopping Cart | License Skip > DIV > Skip And Complete Later
   get licenseSkipAndCompleteLaterButton(): Locator {
-    return this.todo(
-      'GEP_Popups.licenseSkipAndCompleteLaterButton',
-      'Shopping Cart | License Skip > DIV > Skip And Complete Later'
-    );
+    return this.page.getByText(/skip and complete later/i);
   }
 
   // Tosca: Controlled Substances Form on Shopping Cart > Confirm Skip
   get controlledSubstancesConfirmSkipButton(): Locator {
-    return this.todo(
-      'GEP_Popups.controlledSubstancesConfirmSkipButton',
-      'Controlled Substances Form on Shopping Cart > Confirm Skip'
-    );
+    return this.page.getByRole('button', { name: /confirm skip/i });
   }
 
   // Tosca: Close Customer FeedBack survey popup > Close Survey
   get feedbackSurveyCloseButton(): Locator {
-    return this.todo('GEP_Popups.feedbackSurveyCloseButton', 'Close Customer FeedBack survey popup > Close Survey');
+    return this.page.getByRole('button', { name: /close survey/i });
   }
 
   // Tosca: Close Customer FeedBack survey popup > Close Survey_1
   get feedbackSurveyCloseAltButton(): Locator {
-    return this.todo(
-      'GEP_Popups.feedbackSurveyCloseAltButton',
-      'Close Customer FeedBack survey popup > Close Survey_1'
-    );
+    return this.page.locator('[aria-label="Close Survey" i], [title="Close Survey" i]');
   }
 
   // Tosca: Orders & Returns > close   | overlay on the My Orders page
   get ordersAndReturnsCloseButton(): Locator {
-    return this.todo('GEP_Popups.ordersAndReturnsCloseButton', 'Orders & Returns > close');
+    return this.page.locator('ngb-modal-window').getByRole('button', { name: /close/i });
   }
 
   /** Tosca: FR popup / "Launch popup - confirm button" (Confirmar). */

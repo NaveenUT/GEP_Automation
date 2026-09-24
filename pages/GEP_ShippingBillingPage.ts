@@ -6,12 +6,12 @@ import { randomDigits } from '../utils/dataHelpers';
 export class GEP_ShippingBillingPage extends BasePage {
   // Tosca: GenX|Shipping & Billing | Payment method > downward arrow
   get genXPaymentMethodArrow(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genXPaymentMethodArrow', 'GenX|Shipping & Billing | Payment method > downward arrow');
+    return this.page.locator('mat-select[formcontrolname="paymentformcontrolvalue"]');
   }
 
   // Tosca: GenX|Shipping & Billing | Payment method > Bill on Account
   get genXBillOnAccountOption(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genXBillOnAccountOption', 'GenX|Shipping & Billing | Payment method > Bill on Account');
+    return this.page.getByRole('option', { name: 'Bill On Account' });
   }
 
   // Tosca: Shipping & Billing chose Payment > downward arrow
@@ -36,29 +36,31 @@ export class GEP_ShippingBillingPage extends BasePage {
 
   // Tosca: Shipping & Billing | PO number > PO# value (also Enter PO Number > PO# value)
   get poNumberInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.poNumberInput', 'Shipping & Billing | PO number > PO# value');
+    return this.page.locator('#poname');
   }
 
   // Tosca: Enter PO Number > PO# Automatic   | GenX only
   get poNumberAutomaticInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.poNumberAutomaticInput', 'Enter PO Number > PO# Automatic');
+    return this.page.locator('#poname');
   }
 
   // Tosca: Click on Review Order > Review Order
   get reviewOrderButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.reviewOrderButton', 'Click on Review Order > Review Order');
+    return this.page.locator('[data-test-id="shipping_button_revieworder"]');
   }
 
   // Tosca: Shipping & Billing | SubmitOrder > Submit Order   | budget notification overlay
   get budgetOverlaySubmitOrderButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.budgetOverlaySubmitOrderButton', 'Shipping & Billing | SubmitOrder > Submit Order');
+    return this.page.locator('ngb-modal-window').getByRole('button', { name: /submit order/i });
   }
 
   /** Tosca: Choose payment method. */
   async selectPaymentMethod(region: Region, country: string, itPaymentMethod: string): Promise<void> {
     switch (region) {
       case 'genx':
-        // Tosca: Run Only for Gen X Countries
+        // Tosca: Run Only for Gen X Countries. UK pre-selects Bill On Account.
+        await expect(this.genXPaymentMethodArrow).toBeVisible();
+        if (/bill on account/i.test(await this.genXPaymentMethodArrow.innerText())) break;
         await this.genXPaymentMethodArrow.click();
         await this.genXBillOnAccountOption.click();
         break;
@@ -95,6 +97,7 @@ export class GEP_ShippingBillingPage extends BasePage {
 
   /** Tosca: Click on Review Order. */
   async clickReviewOrder(): Promise<void> {
+    await expect(this.reviewOrderButton).toBeEnabled();
     await this.reviewOrderButton.click();
   }
 

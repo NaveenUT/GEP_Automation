@@ -13,17 +13,17 @@ export class GEP_HomePage extends BasePage {
 
   // Tosca: Sign In > Sign In Button
   get signInButton(): Locator {
-    return this.todo('GEP_HomePage.signInButton', 'Sign In > Sign In Button');
+    return this.page.locator('#sign-in');
   }
 
-  // Tosca: Header | sign out > IMG   | user menu icon shown when already logged in
+  // Tosca: Header | sign out > IMG   | "Hi, <name>" user menu shown when already logged in
   get headerUserMenuIcon(): Locator {
-    return this.todo('GEP_HomePage.headerUserMenuIcon', 'Header | sign out > IMG');
+    return this.page.locator('div.user-info');
   }
 
-  // Tosca: Header | sign out > Sign Out
+  // Tosca: Header | sign out > Sign Out   | appears when hovering the user menu
   get headerSignOutLink(): Locator {
-    return this.todo('GEP_HomePage.headerSignOutLink', 'Header | sign out > Sign Out');
+    return this.page.locator('button.signOut__link');
   }
 
   // Tosca: HomePage | Sign out > Logout
@@ -31,34 +31,37 @@ export class GEP_HomePage extends BasePage {
     return this.todo('GEP_HomePage.logoutButton', 'HomePage | Sign out > Logout');
   }
 
-  // Tosca: SignIn > Select Browse > Browse   | UK Medical/Dental domain selector
-  get domainBrowseButton(): Locator {
-    return this.todo('GEP_HomePage.domainBrowseButton', 'SignIn > Select Browse > Browse');
+  // Tosca: SignIn > Select Browse > Browse   | "Browse" link on the "UK <domain>" card of the domain picker popup
+  domainBrowseButton(country: string, domain: string): Locator {
+    return this.page
+      .locator('div.newdomain')
+      .filter({ has: this.page.getByText(`${country} ${domain}`, { exact: true }) })
+      .locator('a[data-test-id^="selectDomain.BrowseText"]');
   }
 
   // Tosca: Header |Cart > cart-icon   | hint: may be id "cart-icon" (unverified)
   get cartIcon(): Locator {
-    return this.todo('GEP_HomePage.cartIcon', 'Header |Cart > cart-icon');
+    return this.page.locator('[data-test-id="user_details_component_div_10"]');
   }
 
   // Tosca: Header | CartItemCount > CartItemCount   | hint: may be id/class "CartItemCount" (unverified)
   get cartItemCount(): Locator {
-    return this.todo('GEP_HomePage.cartItemCount', 'Header | CartItemCount > CartItemCount');
+    return this.page.locator('[data-test-id="cart_image_qty"]');
   }
 
   // Tosca: GlobalSepdp_image_notfaviconarch > Search input box
   get searchInput(): Locator {
-    return this.todo('GEP_HomePage.searchInput', 'GlobalSepdp_image_notfaviconarch > Search input box');
+    return this.page.locator('[data-test-id="RecipientUsername"]');
   }
 
   // Tosca: GlobalSepdp_image_notfaviconarch > Search Icon (also "basic-addon2")   | hint: may be id "basic-addon2" (unverified)
   get searchButton(): Locator {
-    return this.todo('GEP_HomePage.searchButton', 'GlobalSepdp_image_notfaviconarch > Search Icon / basic-addon2');
+    return this.page.locator('#basic-addon2');
   }
 
-  /** Opens the site and clears the launch popups for the region. Tosca: Precondition-Launch the HS Website */
-  async launch(region: Region, country: string, domain: string): Promise<void> {
-    await this.setup(region === 'geny' ? withCacheBuster(config.baseUrl) : config.baseUrl);
+  /** Opens the site (BASE_URL unless a URL is given) and clears the launch popups for the region. Tosca: Precondition-Launch the HS Website */
+  async launch(region: Region, country: string, domain: string, url: string = config.baseUrl): Promise<void> {
+    await this.setup(region === 'geny' ? withCacheBuster(url) : url);
 
     if (region === 'genz') {
       // Tosca: GenZ > FR popup, then Accept the Cookie
@@ -81,15 +84,16 @@ export class GEP_HomePage extends BasePage {
   /** Tosca: If "Header | sign out > IMG" exists, sign out first so the test starts logged out. */
   async signOutIfLoggedIn(): Promise<void> {
     if (!(await this.isVisibleWithin(this.headerUserMenuIcon, 3000))) return;
-    await this.headerUserMenuIcon.click();
+    // Clicking the menu opens the dashboard; the Sign Out link only shows on hover.
+    await this.headerUserMenuIcon.hover();
     await expect(this.headerSignOutLink).toBeVisible();
     await this.headerSignOutLink.click();
   }
 
-  /** Tosca: Domain Check for Genx-UK. Click Browse for UK Medical/Dental domains. */
+  /** Tosca: Domain Check for Genx-UK. Click Browse on the matching UK Medical/Dental card. */
   async selectDomainIfRequired(country: string, domain: string): Promise<void> {
     if (country !== 'UK' || !GEP_HomePage.UK_BROWSE_DOMAINS.includes(domain)) return;
-    await this.clickIfVisible(this.domainBrowseButton, 30000);
+    await this.clickIfVisible(this.domainBrowseButton(country, domain), 30000);
   }
 
   /** Tosca: Click on the sign in link on header. */
@@ -100,6 +104,8 @@ export class GEP_HomePage extends BasePage {
 
   /** Tosca: Fetch the product count of the shopping cart (CartItemCount). */
   async getCartItemCount(): Promise<number> {
+    // The count badge is not rendered when the cart is empty.
+    if (!(await this.isVisibleWithin(this.cartItemCount, 5000))) return 0;
     const text = (await this.cartItemCount.innerText()).trim();
     return Number.parseInt(text, 10) || 0;
   }

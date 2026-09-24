@@ -5,17 +5,17 @@ import { BasePage } from './BasePage';
 export class GEP_OrderDetailsPage extends BasePage {
   // Tosca: OrderDetails|Reorder > Reorder
   get reorderLink(): Locator {
-    return this.todo('GEP_OrderDetailsPage.reorderLink', 'OrderDetails|Reorder > Reorder');
+    return this.page.getByText('Reorder', { exact: true });
   }
 
   // Tosca: OrderDetails|ReorderConfirmModal > close
   get reorderConfirmModalCloseButton(): Locator {
-    return this.todo('GEP_OrderDetailsPage.reorderConfirmModalCloseButton', 'OrderDetails|ReorderConfirmModal > close');
+    return this.page.locator('[data-test-id="view_and_track_my_orders_component_button_1"]');
   }
 
   // Tosca: Fetch the order status in order details page > Status
   get orderStatusText(): Locator {
-    return this.todo('GEP_OrderDetailsPage.orderStatusText', 'Fetch the order status in order details page > Status');
+    return this.page.locator('[data-test-id="viewAndTrackMyOrders.OrderStatusText18"] + *');
   }
 
   /** Tosca: Click the Reorder link in the order detials page, then Close the Reorder Modal. */

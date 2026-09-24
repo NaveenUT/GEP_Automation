@@ -1,7 +1,18 @@
+import type { Region } from '../utils/config';
+
 /**
  * Fixed test data taken from the Tosca scripts. Environment-specific values
- * (URL, credentials, country, region, product) live in .env; see utils/config.ts.
+ * (URL, credentials, country, region, product) live in .env; see utils/config.ts,
+ * unless a test case defines its own environment below (e.g. the UK QA flows).
  */
+
+/** UK QA site. Tosca: Country UK uses the GenX UI with a Medical/Dental domain. */
+export const UK_QA = {
+  baseUrl: 'https://www.uk.qa.eschein.com/',
+  country: 'UK',
+  region: 'genx' as Region,
+} as const;
+
 export const GEP2_36899 = {
   tcId: 'GEP2-36899',
   title: 'Verify submitted order in My order page',
@@ -24,4 +35,25 @@ export const GEP2_18230 = {
   securityAnswer: 'Test',
   // Tosca: IT Payment method > Payment method (GenZ, IT only)
   itPaymentMethod: 'Condizione di Pagamento Abituale',
+  // One test runs per flow. Tosca: {CP[Domain]} + TDM user for that domain.
+  flows: [
+    {
+      name: 'UK Medical',
+      ...UK_QA,
+      domain: 'Medical',
+      username: 'MedicalTest123',
+      password: 'Password@123',
+      // Tosca: TDM Condition == 'OCOrderStatus' (status of the newly submitted order)
+      expectedOrderStatus: 'Pending location verification',
+    },
+    {
+      name: 'UK Dental',
+      ...UK_QA,
+      domain: 'Dental',
+      username: 'ukdental2',
+      password: 'Password@123',
+      // Tosca: TDM Condition == 'OCOrderStatus' (status of the newly submitted order)
+      expectedOrderStatus: 'Processing',
+    },
+  ],
 } as const;

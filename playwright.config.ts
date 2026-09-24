@@ -25,7 +25,8 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.BASE_URL,
-    headless: true,
+    // Headed locally so the run can be watched; headless on CI or with HEADLESS=true.
+    headless: !!process.env.CI || process.env.HEADLESS === 'true',
     viewport: { width: 1920, height: 1080 },
     actionTimeout: 30000,
     navigationTimeout: TIMEOUT,

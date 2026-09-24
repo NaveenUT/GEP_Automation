@@ -4,12 +4,12 @@ import { BasePage } from './BasePage';
 export class GEP_SearchResultsPage extends BasePage {
   // Tosca: SRP | Navigate to First Product > Product name
   get firstProductName(): Locator {
-    return this.todo('GEP_SearchResultsPage.firstProductName', 'SRP | Navigate to First Product > Product name');
+    return this.page.locator('[data-test-id="product-name"]').first();
   }
 
   // Tosca: SRP | Navigate to First Product > Product ID
   get firstProductId(): Locator {
-    return this.todo('GEP_SearchResultsPage.firstProductId', 'SRP | Navigate to First Product > Product ID');
+    return this.page.locator('[data-test-id="srp_listview_text_productid"]').first();
   }
 
   /** Tosca: SelectProductinGrid SRP | Navigate to PDP. */

@@ -13,17 +13,17 @@ export class GEP_HomePage extends BasePage {
 
   // Tosca: Sign In > Sign In Button
   get signInButton(): Locator {
-    return this.todo('GEP_HomePage.signInButton', 'Sign In > Sign In Button');
+    return this.page.locator('[data-test-id="user-login-click"]');
   }
 
   // Tosca: Header | sign out > IMG   | user menu icon shown when already logged in
   get headerUserMenuIcon(): Locator {
-    return this.todo('GEP_HomePage.headerUserMenuIcon', 'Header | sign out > IMG');
+    return this.page.getByRole('button', { name: 'Expand account menu' });
   }
 
   // Tosca: Header | sign out > Sign Out
   get headerSignOutLink(): Locator {
-    return this.todo('GEP_HomePage.headerSignOutLink', 'Header | sign out > Sign Out');
+    return this.page.getByRole('button', { name: /^Sign Out$/i }).or(this.page.getByRole('link', { name: /^Sign Out$/i }));
   }
 
   // Tosca: HomePage | Sign out > Logout
@@ -33,27 +33,31 @@ export class GEP_HomePage extends BasePage {
 
   // Tosca: SignIn > Select Browse > Browse   | UK Medical/Dental domain selector
   get domainBrowseButton(): Locator {
-    return this.todo('GEP_HomePage.domainBrowseButton', 'SignIn > Select Browse > Browse');
+    return this.page
+      .getByRole('dialog', { name: 'Browse our products, services and solutions' })
+      .locator('label')
+      .filter({ hasText: `UK ${config.domain}` })
+      .getByRole('link', { name: 'Browse' });
   }
 
   // Tosca: Header |Cart > cart-icon   | hint: may be id "cart-icon" (unverified)
   get cartIcon(): Locator {
-    return this.todo('GEP_HomePage.cartIcon', 'Header |Cart > cart-icon');
+    return this.page.locator('[data-test-id="cart_image_icon"]');
   }
 
   // Tosca: Header | CartItemCount > CartItemCount   | hint: may be id/class "CartItemCount" (unverified)
   get cartItemCount(): Locator {
-    return this.todo('GEP_HomePage.cartItemCount', 'Header | CartItemCount > CartItemCount');
+    return this.page.locator('[data-test-id="cart_image_qty"]');
   }
 
   // Tosca: GlobalSepdp_image_notfaviconarch > Search input box
   get searchInput(): Locator {
-    return this.todo('GEP_HomePage.searchInput', 'GlobalSepdp_image_notfaviconarch > Search input box');
+    return this.page.locator('[data-test-id="RecipientUsername"]');
   }
 
   // Tosca: GlobalSepdp_image_notfaviconarch > Search Icon (also "basic-addon2")   | hint: may be id "basic-addon2" (unverified)
   get searchButton(): Locator {
-    return this.todo('GEP_HomePage.searchButton', 'GlobalSepdp_image_notfaviconarch > Search Icon / basic-addon2');
+    return this.page.locator('[data-test-id="basic-addon2"]');
   }
 
   /** Opens the site and clears the launch popups for the region. Tosca: Precondition-Launch the HS Website */
@@ -100,8 +104,20 @@ export class GEP_HomePage extends BasePage {
 
   /** Tosca: Fetch the product count of the shopping cart (CartItemCount). */
   async getCartItemCount(): Promise<number> {
+    // The count badge is not rendered when the basket is empty.
+    if (!(await this.isVisibleWithin(this.cartItemCount))) return 0;
     const text = (await this.cartItemCount.innerText()).trim();
     return Number.parseInt(text, 10) || 0;
+  }
+
+  /** Waits until login has finished (the account menu replaces the Sign In button). */
+  async expectLoggedIn(): Promise<void> {
+    await expect(this.headerUserMenuIcon).toBeVisible({ timeout: 60000 });
+  }
+
+  /** Waits until the header basket count shows at least one item. */
+  async expectCartNotEmpty(): Promise<void> {
+    await expect(this.cartItemCount).toBeVisible();
   }
 
   /** Tosca: Header |Cart > cart-icon. Opens the mini cart. */

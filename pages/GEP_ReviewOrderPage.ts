@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 export class GEP_ReviewOrderPage extends BasePage {
   // Tosca: Review Order | SubmitOrder > Submit Your Order
   get submitYourOrderButton(): Locator {
-    return this.todo('GEP_ReviewOrderPage.submitYourOrderButton', 'Review Order | SubmitOrder > Submit Your Order');
+    return this.page.locator('[data-test-id="shipping_button_submit"]').first();
   }
 
   /** Tosca: Submit the order from the Order confirmation page. */

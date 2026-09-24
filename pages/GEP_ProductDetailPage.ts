@@ -4,17 +4,17 @@ import { BasePage } from './BasePage';
 export class GEP_ProductDetailPage extends BasePage {
   // Tosca: PDP|QuantityInput > quantity-box   | hint: may be id "quantity-box" (unverified)
   get quantityInput(): Locator {
-    return this.todo('GEP_ProductDetailPage.quantityInput', 'PDP|QuantityInput > quantity-box');
+    return this.page.locator('[data-test-id="pdp_input_quantityinput"]');
   }
 
   // Tosca: Add to cart > PDP add to cart (also PDP | Add To Cart > Add To Cart in GEP2-18257)
   get addToCartButton(): Locator {
-    return this.todo('GEP_ProductDetailPage.addToCartButton', 'Add to cart > PDP add to cart');
+    return this.page.locator('[data-test-id="pdp_button_additemtocart"] [data-test-id="pdp_button_addcart"]').first();
   }
 
   // Tosca: PDP|COMDropdown > Dropdown Required*   | only shown for some products
   get comDropdown(): Locator {
-    return this.todo('GEP_ProductDetailPage.comDropdown', 'PDP|COMDropdown > Dropdown Required*');
+    return this.page.getByRole('combobox', { name: /Required/i });
   }
 
   // Tosca: Select the dropdown value > users   | first/only COM option (unverified)
@@ -29,12 +29,12 @@ export class GEP_ProductDetailPage extends BasePage {
 
   // Tosca: Verify the Backorder Modal is displayed > Modal
   get backorderModal(): Locator {
-    return this.todo('GEP_ProductDetailPage.backorderModal', 'Verify the Backorder Modal is displayed > Modal');
+    return this.page.getByRole('dialog').filter({ hasText: /back ?order/i });
   }
 
   // Tosca: Click Add to cart in Backorder Modal > Add To Cart
   get backorderModalAddToCartButton(): Locator {
-    return this.todo('GEP_ProductDetailPage.backorderModalAddToCartButton', 'Click Add to cart in Backorder Modal > Add To Cart');
+    return this.backorderModal.getByRole('button', { name: /Add To (Basket|Cart)/i });
   }
 
   /** Tosca: PDP|QuantityInput ({BACKSPACE}{SENDKEYS[50]}). */

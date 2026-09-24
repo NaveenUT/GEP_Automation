@@ -26,7 +26,6 @@ export default defineConfig({
   use: {
     baseURL: process.env.BASE_URL,
     headless: true,
-    viewport: { width: 1920, height: 1080 },
     actionTimeout: 30000,
     navigationTimeout: TIMEOUT,
     screenshot: 'only-on-failure',

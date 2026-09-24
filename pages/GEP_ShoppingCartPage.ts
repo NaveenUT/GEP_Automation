@@ -8,7 +8,7 @@ export class GEP_ShoppingCartPage extends BasePage {
 
   // Tosca: Waiton for ItemCode to display > Item code goes here
   get miniCartItemCode(): Locator {
-    return this.todo('GEP_ShoppingCartPage.miniCartItemCode', 'Waiton for ItemCode to display > Item code goes here');
+    return this.page.getByPlaceholder('Item code goes here');
   }
 
   // Tosca: Shopping Cart|GuestCartIcon > View Cart
@@ -23,15 +23,12 @@ export class GEP_ShoppingCartPage extends BasePage {
 
   // Tosca: Shopping Cart | Clear Cart > Clear Cart
   get clearCartButton(): Locator {
-    return this.todo('GEP_ShoppingCartPage.clearCartButton', 'Shopping Cart | Clear Cart > Clear Cart');
+    return this.page.locator('[data-test-id="shoppingCart.RemoveCartText46"]');
   }
 
   // Tosca: Checkout | Proceed to Shipping and billing page > Shipping and billing button
   get proceedToShippingBillingButton(): Locator {
-    return this.todo(
-      'GEP_ShoppingCartPage.proceedToShippingBillingButton',
-      'Checkout | Proceed to Shipping and billing page > Shipping and billing button'
-    );
+    return this.page.locator('[data-test-id="cart_button_shippingbilling"]');
   }
 
   /** Tosca: Waiton for ItemCode to display. */
@@ -49,6 +46,7 @@ export class GEP_ShoppingCartPage extends BasePage {
   async clearCart(): Promise<void> {
     await expect(this.clearCartButton).toBeVisible();
     await this.clearCartButton.click();
+    await expect(this.clearCartButton).toBeHidden();
   }
 
   /** Tosca: Navigate to shipping and billing page, including the cart popups. */

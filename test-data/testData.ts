@@ -7,7 +7,7 @@ export const GEP2_36899 = {
   title: 'Verify submitted order in My order page',
   // Tosca: PDP|QuantityInput > quantity-box ({SENDKEYS[50]})
   quantity: 50,
-  // Tosca: Shipping & Billing | PO number > PO# value (non-GenX regions)
+  // Tosca: Shipping & Billing | PO number > PO# value (also used for UK, per the provided test data)
   poNumber: '3787329720',
   // Tosca: Enter the Answer > Your answer* ({SENDKEYS["Test"]})
   securityAnswer: 'Test',
@@ -18,14 +18,16 @@ export const GEP2_36899 = {
 export const GEP2_18257 = {
   tcId: 'GEP2-18257',
   title: 'Verify user able to see the orders on Future & Recurring Tab',
-  // Tosca: Shipping & Billing | PO number > PO# value (non-GenX regions)
+  // Tosca: Shipping & Billing | PO number > PO# value (also used for UK, per the provided test data)
   poNumber: '3787329720',
   // Tosca: Enter the Answer > Your answer* ({SENDKEYS["Test"]})
   securityAnswer: 'Test',
   // Tosca: IT Payment method > Payment method (GenZ, IT only)
   itPaymentMethod: 'Condizione di Pagamento Abituale',
-  // Tosca: Generate Buffer > recurringOrderName ({RANDOMTEXT[7]})
-  recurringOrderNameLength: 7,
-  // Tosca: Generate Buffer > recurringOrderCount ({RND[1][52]})
-  recurringOrderCount: { min: 1, max: 52 },
+  // Tosca: Generate Buffer > recurringOrderName (Tosca used {RANDOMTEXT[7]}; fixed value from the provided test data)
+  recurringOrderName: 'NewOrder',
+  // Tosca: Generate Buffer > recurringOrderCount (Tosca used {RND[1][52]}; fixed value from the provided test data)
+  recurringOrderCount: 1,
+  // "Begin Processing On" = today + this many days (the site's earliest allowed date is tomorrow)
+  recurringStartInDays: 1,
 } as const;

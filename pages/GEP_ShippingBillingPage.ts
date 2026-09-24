@@ -1,17 +1,29 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { Region } from '../utils/config';
-import { randomDigits } from '../utils/dataHelpers';
+import { formatDdMmYyyy, randomDigits } from '../utils/dataHelpers';
+
+export type RecurringOrderDetails = {
+  orderName: string;
+  frequency: string;
+  /** Picked from the "Begin Processing On" calendar. */
+  startDate: Date;
+  numberOfOrders: number;
+};
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export class GEP_ShippingBillingPage extends BasePage {
   // Tosca: GenX|Shipping & Billing | Payment method > downward arrow
   get genXPaymentMethodArrow(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genXPaymentMethodArrow', 'GenX|Shipping & Billing | Payment method > downward arrow');
+    return this.page.locator('mat-select[formcontrolname="paymentformcontrolvalue"]');
   }
 
   // Tosca: GenX|Shipping & Billing | Payment method > Bill on Account
   get genXBillOnAccountOption(): Locator {
-    return this.todo('GEP_ShippingBillingPage.genXBillOnAccountOption', 'GenX|Shipping & Billing | Payment method > Bill on Account');
+    return this.page.getByRole('option', { name: 'Bill On Account' });
   }
 
   // Tosca: Shipping & Billing chose Payment > downward arrow
@@ -36,7 +48,7 @@ export class GEP_ShippingBillingPage extends BasePage {
 
   // Tosca: Shipping & Billing | PO number > PO# value (also Enter PO Number > PO# value)
   get poNumberInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.poNumberInput', 'Shipping & Billing | PO number > PO# value');
+    return this.page.locator('#poname');
   }
 
   // Tosca: Enter PO Number > PO# Automatic   | GenX only
@@ -46,60 +58,92 @@ export class GEP_ShippingBillingPage extends BasePage {
 
   // Tosca: Click on Review Order > Review Order
   get reviewOrderButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.reviewOrderButton', 'Click on Review Order > Review Order');
+    return this.page.locator('[data-test-id="shipping_button_revieworder"]');
   }
 
   // Tosca: Shipping & Billing | SubmitOrder > Submit Order   | budget notification overlay
   get budgetOverlaySubmitOrderButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.budgetOverlaySubmitOrderButton', 'Shipping & Billing | SubmitOrder > Submit Order');
+    return this.page.getByRole('dialog').getByRole('button', { name: 'Submit Order' });
   }
 
-  // Tosca: Select Recurring Tab > RECURRING
-  get recurringCartTab(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringCartTab', 'Select Recurring Tab > RECURRING');
+  // Shipping & Scheduling > "Immediate" radio (the site remembers the last schedule choice per account)
+  get immediateScheduleOption(): Locator {
+    return this.page.locator('input[type="radio"][value="IMMEDIATE"]');
   }
 
-  // Tosca: Shipping & Billing- Default shipping popup > Confirm
+  // Tosca: Select Recurring Tab > RECURRING   | UK site: "Recurring" radio under Shipping & Scheduling
+  get recurringScheduleOption(): Locator {
+    return this.page.locator('input[name="scheduleOption"][value="RECURRING"]');
+  }
+
+  // Tosca: Shipping & Billing- Default shipping popup > Confirm   | not seen on UK site (unverified)
   get defaultShippingPopupConfirmButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.defaultShippingPopupConfirmButton', 'Shipping & Billing- Default shipping popup > Confirm');
+    return this.page.getByRole('dialog').getByRole('button', { name: 'Confirm' });
   }
 
   // Tosca: Enter the Order and order count > Order Name
   get recurringOrderNameInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringOrderNameInput', 'Enter the Order and order count > Order Name');
+    return this.page.getByPlaceholder('Order Name');
   }
 
-  // Tosca: Enter the Order and order count > NumberOfOrders
-  get recurringNumberOfOrdersInput(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringNumberOfOrdersInput', 'Enter the Order and order count > NumberOfOrders');
-  }
-
-  // Tosca: Click Frequency selector dropdown > Fre
+  // Tosca: Click Frequency selector dropdown > Fre   | data-test-id ends with the selected value, so match the prefix
   get recurringFrequencyDropdown(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringFrequencyDropdown', 'Click Frequency selector dropdown > Fre');
+    return this.page.locator('mat-select[data-test-id^="shipping&billingpage_arrow_"]');
   }
 
-  // Tosca: Select the frequency value > FrequencyValue   | option text should come from the frequency value (unverified)
+  // Tosca: Select the frequency value > FrequencyValue   | options read e.g. "Bi-Weekly. Get it every 14 days ..."
   recurringFrequencyOption(frequency: string): Locator {
-    return this.todo(
-      'GEP_ShippingBillingPage.recurringFrequencyOption',
-      `Select the frequency value > FrequencyValue ("${frequency}")`
-    );
+    return this.page.getByRole('option', { name: new RegExp(`^${escapeRegExp(frequency)}`) });
+  }
+
+  // Tosca: Recurring Order|InputDate > Click to pick a date   | "Begin Processing On"; shows the picked date as dd/mm/yyyy
+  get recurringStartDateInput(): Locator {
+    return this.page.getByPlaceholder('Pick a Date');
   }
 
   // Tosca: Open Calendar > Open calendar (also Recurring Order Date Picker - Calendar > Open calendar)
   get recurringStartDateCalendarButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringStartDateCalendarButton', 'Open Calendar > Open calendar');
+    return this.page
+      .locator('mat-form-field')
+      .filter({ has: this.recurringStartDateInput })
+      .getByRole('button', { name: 'Open calendar' });
   }
 
-  // Tosca: Click on dateselector Body > TBODY (also Recurring Order Start Date Body Selector > TBODY)
-  get recurringStartDateCalendarBody(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringStartDateCalendarBody', 'Click on dateselector Body > TBODY');
+  // Tosca: Click on dateselector Body > TBODY   | Angular Material calendar overlay (unverified)
+  get recurringStartDateCalendar(): Locator {
+    return this.page.locator('mat-calendar');
   }
 
-  // Tosca: Click on Confirm Button > Confirm (also Recurring Order Start Date Confirm > Confirm)
+  // Header button of the calendar showing the month on display, e.g. "SEP 2026" (unverified)
+  get recurringStartDateCalendarPeriodButton(): Locator {
+    return this.recurringStartDateCalendar.locator('.mat-calendar-period-button');
+  }
+
+  // Calendar "Next month" arrow (unverified)
+  get recurringStartDateCalendarNextButton(): Locator {
+    return this.recurringStartDateCalendar.locator('.mat-calendar-next-button');
+  }
+
+  // Enabled day cell in the month on display (unverified)
+  recurringStartDateCalendarDay(day: number): Locator {
+    return this.recurringStartDateCalendar
+      .locator('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)')
+      .filter({ hasText: new RegExp(`^\\s*${day}\\s*$`) });
+  }
+
+  // Tosca: Click on Confirm Button > Confirm   | only if the calendar has action buttons (unverified)
   get recurringStartDateConfirmButton(): Locator {
-    return this.todo('GEP_ShippingBillingPage.recurringStartDateConfirmButton', 'Click on Confirm Button > Confirm');
+    return this.page.locator('mat-datepicker-content').getByRole('button', { name: /^(Confirm|Apply)$/i });
+  }
+
+  // Tosca: Enter the Order and order count > NumberOfOrders   | "Total Number Of Orders"
+  get recurringNumberOfOrdersInput(): Locator {
+    return this.page.locator('#hsTotalOrderId');
+  }
+
+  /** The page renders before its cart data arrives; Review Order is enabled once it has loaded. */
+  async waitForPageLoaded(): Promise<void> {
+    await expect(this.reviewOrderButton).toBeEnabled({ timeout: 90000 });
   }
 
   /** Tosca: Shipping & Billing | PO number (Ctrl+A, Delete). Clears the PO field before switching carts. */
@@ -107,32 +151,69 @@ export class GEP_ShippingBillingPage extends BasePage {
     await this.poNumberInput.clear();
   }
 
+  /** Makes sure a normal (Immediate) order is placed, in case the account still has Delayed/Recurring selected. */
+  async selectImmediateOrderIfShown(): Promise<void> {
+    if (await this.isVisibleWithin(this.immediateScheduleOption, 3000)) {
+      await this.immediateScheduleOption.check();
+    }
+  }
+
   /** Tosca: Navigate to Recurring cart in Checkout. Also confirms the default shipping popup if it appears. */
   async switchToRecurringCart(): Promise<void> {
-    await expect(this.recurringCartTab).toBeVisible();
-    await this.recurringCartTab.click();
+    await this.recurringScheduleOption.check();
     await this.clickIfVisible(this.defaultShippingPopupConfirmButton, 3000);
   }
 
-  /** Tosca: EnterRecurringCartDetails > Enter the Order and order count, Recurring Order Frequency selection. */
-  async enterRecurringOrderDetails(orderName: string, numberOfOrders: number, frequency: string): Promise<void> {
+  /** Tosca: EnterRecurringCartDetails (order name, frequency, start date, number of orders). */
+  async enterRecurringOrderDetails(details: RecurringOrderDetails): Promise<void> {
     await expect(this.recurringOrderNameInput).toBeVisible();
-    await this.recurringOrderNameInput.fill(orderName);
-    await this.recurringNumberOfOrdersInput.fill(String(numberOfOrders));
+    await this.typeAndBlur(this.recurringOrderNameInput, details.orderName);
 
     await this.recurringFrequencyDropdown.click();
-    const frequencyOption = this.recurringFrequencyOption(frequency);
-    await expect(frequencyOption).toBeVisible();
-    await frequencyOption.click();
+    await this.recurringFrequencyOption(details.frequency).click();
+
+    await this.pickRecurringStartDate(details.startDate);
+    await this.typeAndBlur(this.recurringNumberOfOrdersInput, String(details.numberOfOrders));
   }
 
-  /** Tosca: Chose a Date and click Confirm. Accepts the date the calendar highlights by default. */
-  async selectDefaultRecurringStartDate(): Promise<void> {
+  /** Tosca: Chose a Date and click Confirm. Opens the calendar, moves to the date's month and clicks the day. */
+  async pickRecurringStartDate(date: Date): Promise<void> {
     await this.recurringStartDateCalendarButton.click();
-    // Tosca clicks the calendar body and presses Enter to pick the highlighted date.
-    await this.recurringStartDateCalendarBody.click();
-    await this.page.keyboard.press('Enter');
-    await this.recurringStartDateConfirmButton.click();
+    await expect(this.recurringStartDateCalendar).toBeVisible();
+
+    // The calendar opens on the month of the current value; step forward until the target month shows.
+    // First three letters only: matches "SEP 2026" and "September 2026" (en-GB's short name is "Sept").
+    const month = date.toLocaleString('en-GB', { month: 'long' }).slice(0, 3);
+    const target = new RegExp(`${month}.*${date.getFullYear()}`, 'i');
+    for (let i = 0; i < 24 && !target.test(await this.recurringStartDateCalendarPeriodButton.innerText()); i++) {
+      await this.recurringStartDateCalendarNextButton.click();
+    }
+    await expect(this.recurringStartDateCalendarPeriodButton).toHaveText(target);
+
+    await this.recurringStartDateCalendarDay(date.getDate()).click();
+    await this.clickIfVisible(this.recurringStartDateConfirmButton, 2000);
+
+    await expect(this.recurringStartDateCalendar).toBeHidden();
+    await expect(this.recurringStartDateInput).toHaveValue(formatDdMmYyyy(date));
+  }
+
+  /** Types the PO number into "PO#" (the UK site has a single PO field). */
+  async fillPoNumber(poNumber: string): Promise<void> {
+    await this.typeAndBlur(this.poNumberInput, poNumber);
+  }
+
+  /**
+   * Types like a user and leaves the field. fill() alone updated the field on screen but the
+   * value was not carried to Review Order, so these inputs need key events and a blur.
+   */
+  private async typeAndBlur(input: Locator, value: string): Promise<void> {
+    await input.focus();
+    await input.press('Control+A');
+    await input.press('Delete');
+    await input.pressSequentially(value, { delay: 30 });
+    await input.press('Tab');
+    await expect(input).toHaveValue(value);
+    //await input.fill(value)
   }
 
   /** Tosca: Choose payment method. */
@@ -176,6 +257,9 @@ export class GEP_ShippingBillingPage extends BasePage {
 
   /** Tosca: Click on Review Order. */
   async clickReviewOrder(): Promise<void> {
+    await expect(this.reviewOrderButton).toBeEnabled({ timeout: 50000 });
+    //await this.reviewOrderButton.scrollIntoViewIfNeeded();
+    await this.page.waitForTimeout(10000)
     await this.reviewOrderButton.click();
   }
 

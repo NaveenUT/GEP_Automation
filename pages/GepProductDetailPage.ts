@@ -37,6 +37,29 @@ export class GepProductDetailPage extends BasePage {
     return this.backorderDialog.getByRole('button', { name: /Add To (Basket|Cart)/i });
   }
 
+  // Tosca: PDP | Unite   | GenX/GenZ; module has no controls in the export. UK: the first "Unit of measure" button (e.g. Each)
+  get uomUnitOption(): Locator {
+    return this.page.locator('[data-test-id="pdp_li_uom_value"]').first();
+  }
+
+  // Tosca: Verify Price Changes when UOM is changed_Reference > UOM selector   | GenY; reusable block not in export
+  get uomSelector(): Locator {
+    return this.todo('GepProductDetailPage.uomSelector', 'Verify Price Changes when UOM is changed_Reference > UOM selector');
+  }
+
+  // Tosca: Verify Price Changes when UOM is changed_Reference > secondary UOM option   | GenY; reusable block not in export
+  get secondaryUomOption(): Locator {
+    return this.todo(
+      'GepProductDetailPage.secondaryUomOption',
+      'Verify Price Changes when UOM is changed_Reference > secondary UOM option'
+    );
+  }
+
+  // Tosca: Verify Price Changes when UOM is changed_Reference > product price   | GenY; reusable block not in export
+  get productPrice(): Locator {
+    return this.todo('GepProductDetailPage.productPrice', 'Verify Price Changes when UOM is changed_Reference > product price');
+  }
+
   /** Tosca: PDP|QuantityInput ({BACKSPACE}{SENDKEYS[50]}). */
   async enterQuantity(quantity: number): Promise<void> {
     await expect(this.pdpQuantityInput).toBeVisible();
@@ -68,5 +91,22 @@ export class GepProductDetailPage extends BasePage {
     if (!(await this.isVisibleWithin(this.backorderDialog, 3000))) return false;
     await this.backorderDialogAddToCartButton.click();
     return true;
+  }
+
+  /** Tosca: PDP | Unite (GenX/GenZ). Selects the unit UOM before adding to cart. */
+  async selectUnitUom(): Promise<void> {
+    await expect(this.uomUnitOption).toBeVisible();
+    await this.uomUnitOption.click();
+  }
+
+  /** Tosca: Verify Price Changes when UOM is changed_Reference (GenY). The price must differ after switching UOM. */
+  async verifyPriceChangesWhenUomChanged(): Promise<void> {
+    await expect(this.productPrice).toBeVisible();
+    const primaryUomPrice = (await this.productPrice.innerText()).trim();
+
+    await this.uomSelector.click();
+    await this.secondaryUomOption.click();
+
+    await expect(this.productPrice).not.toHaveText(primaryUomPrice);
   }
 }

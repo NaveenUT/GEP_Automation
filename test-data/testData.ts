@@ -43,3 +43,25 @@ export const GEP2_18257 = {
   // "Begin Processing On" = today + this many days (the site's earliest allowed date is tomorrow)
   recurringStartInDays: 1,
 } as const;
+
+export const GEP2_18559 = {
+  tcId: 'GEP2-18559',
+  title: 'Place Order from Unplaced Order section',
+  // Tosca: Shipping & Billing | PO number > PO# value (non-GenX regions)
+  poNumber: '3787329720',
+  // Tosca: Enter the Answer > Your answer* ({SENDKEYS["Test"]})
+  securityAnswer: 'Test',
+  // Tosca: IT Payment method > Payment method (GenZ, IT only)
+  itPaymentMethod: 'Condizione di Pagamento Abituale',
+} as const;
+
+export const GEP2_22324 = {
+  tcId: 'GEP2-22324',
+  title: 'End-to-End flow for UOM display on Order History page',
+  // Tosca: Shipping & Billing | PO number > PO# value (non-GenX regions)
+  poNumber: '3787329720',
+  // Tosca: Enter the Answer > Your answer* ({SENDKEYS["Test"]})
+  securityAnswer: 'Test',
+  // Tosca: IT Payment method > Payment method (GenZ, IT only)
+  itPaymentMethod: 'Condizione di Pagamento Abituale',
+} as const;

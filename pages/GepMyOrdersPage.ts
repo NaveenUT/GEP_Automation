@@ -2,11 +2,37 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { time } from 'node:console';
 
-/** Account Dashboard > Orders (submitted orders). */
+/** Values captured from the first row of the Unplaced Orders tab (Tosca buffers UnplacedOrder*). */
+export type UnplacedOrderDetails = {
+  createdDate: string;
+  shippingAccountNumber: string;
+  subtotal: string;
+  itemsCount: string;
+  lastModifiedDate: string;
+};
+
+/** Account Dashboard > Orders (submitted, unplaced and future & recurring orders, order history search). */
 export class GepMyOrdersPage extends BasePage {
-  // Tosca: Click on Account Dashboard > Account Dashboard   | header "Orders & Returns" / "Order And Returns" button
+  // Not in the Tosca export: on UK the Account Dashboard link is inside the collapsed account menu
+  get accountMenuButton(): Locator {
+    return this.page.getByRole('button', { name: 'Expand account menu' });
+  }
+
+  // Not in the Tosca export: UK lists new orders under "Pending Location Orders" until the location is verified
+  private get pendingLocationOrdersSection(): Locator {
+    return this.page
+      .locator('app-submitted-orders')
+      .filter({ has: this.page.getByRole('heading', { name: 'Pending Location Orders' }) });
+  }
+
+  // Tosca: Click on Account Dashboard > Account Dashboard   | UK: inside the account menu (accountMenuButton)
   get accountDashboardLink(): Locator {
-    return this.page.locator('[data-test-id="user_details_component_button_13"]');
+    return this.page.getByRole('link', { name: 'Account Dashboard' });
+  }
+
+  // Tosca: Click on Orders > Orders   | Account Dashboard left menu: "Orders & Returns" on UK, "Orders" on US
+  get ordersTab(): Locator {
+    return this.page.getByRole('menuitem', { name: /^My Orders Left Menu Icon Orders/ });
   }
 
   // Tosca: Click on Orders > Orders   | UK site: "Submitted Orders" tab on My Orders
@@ -39,9 +65,77 @@ export class GepMyOrdersPage extends BasePage {
     return this.page.locator('a[data-test-id="submitted_orders_component_a_13"]:visible');
   }
 
+  // Tosca: Orders & Returns > close   | optional overlay on the orders page
+  get ordersReturnsPopupCloseButton(): Locator {
+    return this.page.getByRole('dialog', { name: 'Orders & Returns' }).getByRole('button', { name: 'close' });
+  }
+
+  // Tosca: My Account | My Orders | Search Orders > Search INput box (also " Search the Order")
+  get orderHistorySearchInput(): Locator {
+    return this.pendingLocationOrdersSection.getByRole('searchbox', { name: 'Search', exact: true });
+  }
+
+  // Tosca: My Account | My Orders | Search Orders > search_btn
+  get orderHistorySearchButton(): Locator {
+    return this.pendingLocationOrdersSection.getByRole('button', { name: 'search-button' });
+  }
+
+  // Tosca: Orders > OrderNumberPass in Buffer   | order number link, located by the captured order number
+  orderNumberLink(orderNumber: string): Locator {
+    return this.page.getByRole('link', { name: orderNumber, exact: true });
+  }
+
   // Tosca: Navigate to My Orders Page   | header button: "Orders & Returns" (UK), "Order And Returns" (US)
   get headerOrdersAndReturnsButton(): Locator {
     return this.page.getByRole('button', { name: /Orders? (&|And) Returns/ });
+  }
+
+  // Tosca: Orders Page Tab > Unplaced Orders
+  get unplacedOrdersTab(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrdersTab', 'Orders Page Tab > Unplaced Orders');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Created Date   | first row of the unplaced orders table
+  get unplacedOrderCreatedDateCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderCreatedDateCell', 'Unplaced Orders Tab > TBODY > Created Date');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Created By User
+  get unplacedOrderCreatedByUserCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderCreatedByUserCell', 'Unplaced Orders Tab > TBODY > Created By User');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Shipping Account Number
+  get unplacedOrderShippingAccountNumberCell(): Locator {
+    return this.todo(
+      'GepMyOrdersPage.unplacedOrderShippingAccountNumberCell',
+      'Unplaced Orders Tab > TBODY > Shipping Account Number'
+    );
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Subtotal Value
+  get unplacedOrderSubtotalCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderSubtotalCell', 'Unplaced Orders Tab > TBODY > Subtotal Value');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Items Count
+  get unplacedOrderItemsCountCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderItemsCountCell', 'Unplaced Orders Tab > TBODY > Items Count');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Location Address
+  get unplacedOrderLocationAddressCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderLocationAddressCell', 'Unplaced Orders Tab > TBODY > Location Address');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > Last Modified date
+  get unplacedOrderLastModifiedDateCell(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderLastModifiedDateCell', 'Unplaced Orders Tab > TBODY > Last Modified date');
+  }
+
+  // Tosca: Unplaced Orders Tab > TBODY > View & Modify
+  get unplacedOrderViewAndModifyLink(): Locator {
+    return this.todo('GepMyOrdersPage.unplacedOrderViewAndModifyLink', 'Unplaced Orders Tab > TBODY > View & Modify');
   }
 
   // First data row of the Future & Recurring results table (the header row has no <td>)
@@ -81,6 +175,14 @@ export class GepMyOrdersPage extends BasePage {
     await this.submittedOrdersTab.click();
   }
 
+  /** Tosca: Orders Tab > Navigate to My Orders Page (UK: account menu > Account Dashboard > Orders & Returns). */
+  async navigateToOrders(): Promise<void> {
+    await this.accountMenuButton.click();
+    await this.accountDashboardLink.click();
+    await expect(this.ordersTab).toBeVisible();
+    await this.ordersTab.click();
+  }
+
   /** Opens the Submitted Orders tab (UK: after the header "Orders & Returns" button). */
   async openSubmittedOrdersTab(): Promise<void> {
     await expect(this.submittedOrdersTab).toBeVisible();
@@ -100,6 +202,61 @@ export class GepMyOrdersPage extends BasePage {
   async expectSubmittedOrderListed(orderNumber: string): Promise<void> {
     // The table shows a "WEB" prefix (e.g. WEB04393054); the confirmation page may not.
     await expect(this.submittedOrdersFirstRowOrderCell).toContainText(orderNumber);
+  }
+
+  /** Tosca: Search the Order -My Orders Page. Closes the Orders & Returns overlay first if it is shown. */
+  async searchOrderHistory(orderNumber: string): Promise<void> {
+    await this.clickIfVisible(this.ordersReturnsPopupCloseButton, 3000);
+    await expect(this.orderHistorySearchInput).toBeVisible();
+    await this.orderHistorySearchInput.fill(orderNumber);
+    await this.orderHistorySearchButton.click();
+    // Accounts without pending location verification (e.g. the US QA account) list new orders in the main table
+    if (await this.isVisibleWithin(this.orderNumberLink(orderNumber), 10000)) return;
+    await this.searchSubmittedOrder(orderNumber);
+  }
+
+  /** Tosca: Navigate to viewandtrackmyorders for orderId Buffer. Opens the order's View & Track page. */
+  async openOrderViewAndTrack(orderNumber: string): Promise<void> {
+    const orderLink = this.orderNumberLink(orderNumber);
+    await expect(orderLink).toBeVisible();
+    await orderLink.click();
+  }
+
+  /** Tosca: Navigate to UnplacedOrders Tab. */
+  async openUnplacedOrdersTab(): Promise<void> {
+    await expect(this.unplacedOrdersTab).toBeVisible();
+    await this.unplacedOrdersTab.click();
+  }
+
+  /** Tosca: Validation of UnplacedOrdersTab. Verifies every column of the first row and returns the captured values. */
+  async verifyFirstUnplacedOrderDetails(): Promise<UnplacedOrderDetails> {
+    const columns = [
+      this.unplacedOrderCreatedDateCell,
+      this.unplacedOrderCreatedByUserCell,
+      this.unplacedOrderShippingAccountNumberCell,
+      this.unplacedOrderSubtotalCell,
+      this.unplacedOrderItemsCountCell,
+      this.unplacedOrderLocationAddressCell,
+      this.unplacedOrderLastModifiedDateCell,
+      this.unplacedOrderViewAndModifyLink,
+    ];
+    for (const column of columns) {
+      await expect(column).toBeVisible();
+    }
+
+    return {
+      createdDate: (await this.unplacedOrderCreatedDateCell.innerText()).trim(),
+      // Tosca reads OuterText here; innerText is the Playwright equivalent
+      shippingAccountNumber: (await this.unplacedOrderShippingAccountNumberCell.innerText()).trim(),
+      subtotal: (await this.unplacedOrderSubtotalCell.innerText()).trim(),
+      itemsCount: (await this.unplacedOrderItemsCountCell.innerText()).trim(),
+      lastModifiedDate: (await this.unplacedOrderLastModifiedDateCell.innerText()).trim(),
+    };
+  }
+
+  /** Tosca: CLick on View & Modify in UnplacedOrdersTab. Loads the unplaced order back into the cart. */
+  async viewAndModifyFirstUnplacedOrder(): Promise<void> {
+    await this.unplacedOrderViewAndModifyLink.click();
   }
 
   /** Tosca: Navigate to My Orders Page, via the header "Orders & Returns" button. */

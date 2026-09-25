@@ -16,9 +16,9 @@ export class GepShoppingCartPage extends BasePage {
     return this.todo('GepShoppingCartPage.miniCartGuestViewCartButton', 'Shopping Cart|GuestCartIcon > View Cart');
   }
 
-  // Tosca: Shopping Cart|LoggedInCartIcon > DIV
+  // Tosca: Shopping Cart|LoggedInCartIcon > DIV   | UK: the header cart DIV (role=button); there is no mini cart
   get miniCartLoggedInViewCartButton(): Locator {
-    return this.todo('GepShoppingCartPage.miniCartLoggedInViewCartButton', 'Shopping Cart|LoggedInCartIcon > DIV');
+    return this.page.getByRole('button', { name: /^cart-icon/ });
   }
 
   // Tosca: Shopping Cart | Clear Cart > Clear Cart
@@ -29,6 +29,17 @@ export class GepShoppingCartPage extends BasePage {
   // Tosca: Checkout | Proceed to Shipping and billing page > Shipping and billing button
   get cartProceedToShippingBillingButton(): Locator {
     return this.page.locator('[data-test-id="cart_button_shippingbilling"]');
+  }
+
+  // Tosca: Fetch the cart subtotal after new product is added > SubTotal
+  get cartSubtotalText(): Locator {
+    return this.todo('GepShoppingCartPage.cartSubtotalText', 'Fetch the cart subtotal after new product is added > SubTotal');
+  }
+
+  /** Tosca: Fetch the cart subtotal after new product is added (InnerText -> cartAddSubTotal). */
+  async getCartSubtotal(): Promise<string> {
+    await expect(this.cartSubtotalText).toBeVisible();
+    return (await this.cartSubtotalText.innerText()).trim();
   }
 
   /** Tosca: Waiton for ItemCode to display (the cart page quick-order box). */

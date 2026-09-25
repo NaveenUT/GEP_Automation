@@ -1,13 +1,15 @@
 {
   "name": "gep_automation",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "description": "Playwright automation for the Henry Schein GEP sites, converted from Tosca test cases.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "test:orders": "playwright test tests/orders",
+    "typecheck": "tsc --noEmit",
+    "list": "playwright test --list --reporter=list",
+    "locators": "node scripts/generate-locators-report.js",
+    "report": "playwright show-report",
+    "check": "npm run typecheck && npm run list"
   },
   "keywords": [],
   "author": "",

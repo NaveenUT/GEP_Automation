@@ -1,0 +1,40 @@
+import type { RegionBehaviour } from './RegionBehaviour';
+import { randomDigits } from '../utils/dataHelpers';
+
+/** Gen X sites (UK, US). */
+export const genX: RegionBehaviour = {
+  name: 'genx',
+  // Tosca: Verify if Country is genx then update values in genxcustomerData
+  reviewCreatesUnplacedOrder: true,
+
+  siteUrl: (market) => market.baseUrl,
+
+  async clearLaunchPopups({ home, header, popups, market }) {
+    // Tosca: GenX and GenY
+    await header.signOutIfLoggedIn();
+    await popups.acceptCookiesIfShown();
+    // Tosca: Domain Check for Genx-UK
+    await home.selectDomainIfRequired(market.country, market.domain);
+    await header.signOutIfLoggedIn();
+    await popups.confirmLaunchPopupIfShown();
+  },
+
+  // Tosca: Run Only for Gen X Countries > Bill on Account
+  selectPaymentMethod: (shippingBilling) => shippingBilling.selectBillOnAccount(),
+
+  // Tosca: GenX replaces the pre-filled "PO# Automatic" value with a random 7-digit number ({RND[7]})
+  poNumberFor: () => randomDigits(7),
+
+  // Tosca: Run Only for Gen X Countries > PDP | Unite
+  selectUom: (productDetail) => productDetail.selectUnitUom(),
+
+  // Tosca: Gen X > HenrySchein| My Orders | View&Track > Product In Order Page - Primary UOM
+  expectUomOnOrder: (orderDetails, productId) => orderDetails.expectPrimaryUomDisplayed(productId),
+
+  async afterOrderSubmitted(popups) {
+    await popups.closeFeedbackSurveyIfShown();
+  },
+
+  // Tosca: only Gen Z signs out; Gen X just closes the browser
+  async signOutAtEnd() {},
+};

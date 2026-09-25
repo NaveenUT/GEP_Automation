@@ -1,22 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
-import path from 'path';
-import { config } from './utils/config';
+import type { GepOptions } from './fixtures/gepFixtures';
+import { env, resolveMarket, selectedMarketIds } from './src/config/env';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-const TIMEOUT = Number(process.env.TIMEOUT) || 60000;
-
-export default defineConfig({
+export default defineConfig<GepOptions>({
   testDir: './tests',
-  timeout: TIMEOUT,
+  timeout: env.timeout,
   expect: {
     timeout: 10000,
   },
+  // Tests share one account (and so one cart) per market, so they run one after another.
   fullyParallel: false,
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
 
   reporter: [
     ['list'],
@@ -25,25 +21,26 @@ export default defineConfig({
   ],
 
   use: {
-    // Per COUNTRY (e.g. US_BASE_URL), falling back to BASE_URL; see utils/config.ts
-    baseURL: config.baseUrl,
-    // Headed locally so the run can be watched; headless on CI or with HEADLESS=true.
-    headless: !!process.env.CI || process.env.HEADLESS === 'true',
+    headless: env.headless,
     viewport: { width: 1920, height: 1080 },
     actionTimeout: 30000,
-    navigationTimeout: TIMEOUT,
+    navigationTimeout: env.timeout,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
     ignoreHTTPSErrors: true,
   },
 
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
+  // One project per market selected with MARKET in .env (default us-qa), e.g. MARKET=us-qa,uk-dental-qa.
+  projects: selectedMarketIds().map((marketId) => ({
+    name: marketId,
+    use: {
+      ...devices['Desktop Chrome'],
+      viewport: { width: 1920, height: 1080 },
+      marketId,
+      baseURL: resolveMarket(marketId).baseUrl,
     },
-  ],
+  })),
 
   outputDir: 'test-results',
 });

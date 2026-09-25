@@ -23,7 +23,7 @@ test.describe('GEP2-22324 | End-to-End flow for UOM display on Order History pag
     let orderNumber = '';
 
     await test.step('Precondition: launch the HS website and clear launch popups', async () => {
-      await homePage.launch(region, country, config.domain);
+      await homePage.launchSite(region, country, config.domain);
     });
 
     await test.step('Precondition: sign in', async () => {
@@ -34,15 +34,15 @@ test.describe('GEP2-22324 | End-to-End flow for UOM display on Order History pag
 
     await test.step('Clear the cart if it is not empty', async () => {
       if ((await homePage.getCartItemCount()) > 0) {
-        await homePage.openMiniCart();
-        await shoppingCartPage.openCartFromMiniCart();
+        await homePage.openCartFromHeader();
+        await shoppingCartPage.openCartFromMiniCartPopup();
         await shoppingCartPage.clearCart();
       }
     });
 
     await test.step('Search for the 2-UOM product and open its PDP', async () => {
       await homePage.searchProduct(uomProductId);
-      await searchResultsPage.openProduct(uomProductId);
+      await searchResultsPage.openProductFromResults(uomProductId);
     });
 
     await test.step('Select the UOM and add the product to cart', async () => {
@@ -54,13 +54,13 @@ test.describe('GEP2-22324 | End-to-End flow for UOM display on Order History pag
         await productDetailPage.selectUnitUom();
       }
       // Tosca: Add to cart_Reference (GenX/GenZ). GenY has no explicit add step in the export; see summary.
-      await productDetailPage.addToCart();
+      await productDetailPage.clickAddToCart();
     });
 
     await test.step('Open the shopping cart', async () => {
-      await homePage.openMiniCart();
-      await shoppingCartPage.expectItemInMiniCart();
-      await shoppingCartPage.openCartFromMiniCart();
+      await homePage.openCartFromHeader();
+      await shoppingCartPage.expectCartPageLoaded();
+      await shoppingCartPage.openCartFromMiniCartPopup();
     });
 
     await test.step('Proceed to Shipping & Billing', async () => {
@@ -69,18 +69,18 @@ test.describe('GEP2-22324 | End-to-End flow for UOM display on Order History pag
 
     await test.step('Choose the payment method and enter the PO number', async () => {
       await shippingBillingPage.selectPaymentMethod(region, country, GEP2_22324.itPaymentMethod);
-      await shippingBillingPage.enterPoNumber(region, GEP2_22324.poNumber);
+      await shippingBillingPage.enterPoNumberForRegion(region, GEP2_22324.poNumber);
     });
 
     await test.step('Review and submit the order', async () => {
       await shippingBillingPage.clickReviewOrder();
-      await shippingBillingPage.confirmBudgetOverlayIfShown();
+      await shippingBillingPage.confirmBudgetDialogIfShown();
       await reviewOrderPage.submitOrder();
     });
 
     await test.step('Verify the order confirmation and capture the order number', async () => {
       // Tosca: If GenX wait > Close Customer FeedBack survey popup
-      if (region === 'genx') await popups.closeFeedbackSurvey();
+      if (region === 'genx') await popups.closeFeedbackSurveyIfShown();
       await orderConfirmationPage.expectOrderSubmitted();
       orderNumber = await orderConfirmationPage.getOrderNumber();
     });

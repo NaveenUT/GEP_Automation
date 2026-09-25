@@ -54,4 +54,28 @@ export const config = {
   get uomProductId(): string {
     return requireEnv('UOM_PRODUCT_ID');
   },
+  // Tosca: TDM Condition == 'recurringFrequency' (option shown in the recurring frequency dropdown)
+  get recurringFrequency(): string {
+    return requireEnv('RECURRING_FREQUENCY');
+  },
 };
+
+/**
+ * Per-test values: reads <TC>_<NAME> first (e.g. GEP2_36899_APP_USERNAME), then the shared <NAME>.
+ * Lets test cases that need a different user or product share one .env.
+ */
+export function configFor(tcId: string) {
+  const prefix = tcId.replace(/-/g, '_');
+  const value = (name: string): string => process.env[`${prefix}_${name}`]?.trim() || requireEnv(name);
+  return {
+    get username(): string {
+      return value('APP_USERNAME');
+    },
+    get password(): string {
+      return value('APP_PASSWORD');
+    },
+    get productId(): string {
+      return value('PRODUCT_ID');
+    },
+  };
+}

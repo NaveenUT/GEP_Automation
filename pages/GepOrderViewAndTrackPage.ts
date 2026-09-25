@@ -2,7 +2,7 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 /** My Orders > View & Track: details of one order, opened from the order history. */
-export class GEP_OrderViewAndTrackPage extends BasePage {
+export class GepOrderViewAndTrackPage extends BasePage {
   // Tosca: HenrySchein| My Orders | View&Track > Product In Order Page - Primary UOM   | located by the ordered product ID
   primaryUomForProduct(productId: string): Locator {
     return this.page
@@ -14,7 +14,7 @@ export class GEP_OrderViewAndTrackPage extends BasePage {
   // Tosca: Validate Presence of Primary&Secondary UOM_Reference > Secondary UOM   | GenY; reusable block not in export
   secondaryUomForProduct(productId: string): Locator {
     return this.todo(
-      'GEP_OrderViewAndTrackPage.secondaryUomForProduct',
+      'GepOrderViewAndTrackPage.secondaryUomForProduct',
       `Validate Presence of Primary&Secondary UOM_Reference > Secondary UOM (${productId})`
     );
   }

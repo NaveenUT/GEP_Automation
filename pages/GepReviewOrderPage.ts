@@ -1,10 +1,10 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
-export class GEP_ReviewOrderPage extends BasePage {
+export class GepReviewOrderPage extends BasePage {
   // Tosca: Review Order | SubmitOrder > Submit Your Order
   get submitYourOrderButton(): Locator {
-    return this.page.getByRole('button', { name: 'Submit Your Order' });
+    return this.page.locator('[data-test-id="shipping_button_submit"]').first();
   }
 
   /** Tosca: Submit the order from the Order confirmation page. */

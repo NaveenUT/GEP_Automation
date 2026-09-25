@@ -1,7 +1,7 @@
 import { test } from '../../fixtures/customFixtures';
 import { config } from '../../utils/config';
 import { GEP2_18559 } from '../../test-data/testData';
-import { UnplacedOrderDetails } from '../../pages/GEP_MyOrdersPage';
+import { UnplacedOrderDetails } from '../../pages/GepMyOrdersPage';
 
 test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
   test('Unplaced order reopened with View & Modify can be submitted @GEP @orders @unplacedOrders @regression', async ({
@@ -21,7 +21,7 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
     let unplacedOrder: UnplacedOrderDetails | undefined;
 
     await test.step('Precondition: launch the HS website and clear launch popups', async () => {
-      await homePage.launch(region, country, config.domain);
+      await homePage.launchSite(region, country, config.domain);
     });
 
     await test.step('Precondition: sign in', async () => {
@@ -32,8 +32,8 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
 
     await test.step('Clear the cart if it is not empty', async () => {
       if ((await homePage.getCartItemCount()) > 0) {
-        await homePage.openMiniCart();
-        await shoppingCartPage.openCartFromMiniCart();
+        await homePage.openCartFromHeader();
+        await shoppingCartPage.openCartFromMiniCartPopup();
         await shoppingCartPage.clearCart();
       }
     });
@@ -41,15 +41,15 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
     await test.step('Search for the product and open its PDP', async () => {
       // Tosca: TDM Condition == 'Generic'
       await homePage.searchProduct(config.productId);
-      await searchResultsPage.openProduct(config.productId);
+      await searchResultsPage.openProductFromResults(config.productId);
     });
 
     await test.step('Select the PDP options and add the product to cart', async () => {
-      await productDetailPage.selectComValueIfRequired();
+      await productDetailPage.selectComValueIfShown();
       // Tosca: If Country is FR (ValidCountries = FR) > If fixertype exist
-      if (country === 'FR') await productDetailPage.selectRapideFixerTypeIfShown();
-      await productDetailPage.addToCart();
-      await productDetailPage.confirmBackorderModalIfShown();
+      await productDetailPage.selectFixerTypeIfRequired(country);
+      await productDetailPage.clickAddToCart();
+      await productDetailPage.confirmBackorderIfShown();
     });
 
     if (region === 'genx') {
@@ -57,11 +57,11 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
       // (Country is UKQADental, UKQAMedical, IEQA or KTQA). Tosca runs checkout up to
       // Review Order without submitting, which saves the cart as an unplaced order.
       await test.step('GenX: go through checkout up to Review Order to create the unplaced order', async () => {
-        await homePage.openMiniCart();
-        await shoppingCartPage.openCartFromMiniCart();
+        await homePage.openCartFromHeader();
+        await shoppingCartPage.openCartFromMiniCartPopup();
         await shoppingCartPage.proceedToShippingAndBilling();
         await shippingBillingPage.selectPaymentMethod(region, country, GEP2_18559.itPaymentMethod);
-        await shippingBillingPage.enterPoNumber(region, GEP2_18559.poNumber);
+        await shippingBillingPage.enterPoNumberForRegion(region, GEP2_18559.poNumber);
         await shippingBillingPage.clickReviewOrder();
       });
     }
@@ -80,9 +80,9 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
     });
 
     await test.step('Open the shopping cart and capture the subtotal and item count', async () => {
-      await homePage.openMiniCart();
-      await shoppingCartPage.expectItemInMiniCart();
-      await shoppingCartPage.openCartFromMiniCart();
+      await homePage.openCartFromHeader();
+      await shoppingCartPage.expectCartPageLoaded();
+      await shoppingCartPage.openCartFromMiniCartPopup();
       const cartSubtotal = await shoppingCartPage.getCartSubtotal();
       const cartItemCount = await homePage.getCartItemCount();
       // Tosca stores these values in buffers but never compares them with the unplaced order.
@@ -101,18 +101,18 @@ test.describe('GEP2-18559 | Place Order from Unplaced Order section', () => {
 
     await test.step('Choose the payment method and enter the PO number', async () => {
       await shippingBillingPage.selectPaymentMethod(region, country, GEP2_18559.itPaymentMethod);
-      await shippingBillingPage.enterPoNumber(region, GEP2_18559.poNumber);
+      await shippingBillingPage.enterPoNumberForRegion(region, GEP2_18559.poNumber);
     });
 
     await test.step('Review and submit the order', async () => {
       await shippingBillingPage.clickReviewOrder();
-      await shippingBillingPage.confirmBudgetOverlayIfShown();
+      await shippingBillingPage.confirmBudgetDialogIfShown();
       await reviewOrderPage.submitOrder();
     });
 
     await test.step('Verify the order confirmation', async () => {
       // Tosca: If GenX wait > Close Customer FeedBack survey popup
-      if (region === 'genx') await popups.closeFeedbackSurvey();
+      if (region === 'genx') await popups.closeFeedbackSurveyIfShown();
       await orderConfirmationPage.expectOrderSubmitted();
     });
 

@@ -20,6 +20,7 @@ Status: `TODO`, `Filled` or `Needs review`.
 | GepPopups | cookieAcceptAllFallbackButton | Accept Cookies > Accept All | fallback | Filled | `role button "Accept all"` | live site 2026-09-24 |
 | GepPopups | adPopupCloseIcon | Click on Close for Ad > Close icon | GenY | TODO | – | – |
 | GepPopups | freeItemContinueWithoutButton | Shopping Cart \| Free Item Popup > Continue Without Free Item | – | Filled | `[data-test-id="expressCheckoutPopup.ContinueWithoutBtnText4"]` | live site 2026-09-24 |
+| GepPopups | inventoryNoticeContinueButton | – (not in Tosca) | US cart "Important:" notice | Filled | `[data-test-id="inventoryWHPopup.ContinueWithoutBtnText"]` | live site 2026-09-25 (US) |
 | GepPopups | licenseSkipAndCompleteLaterButton | Shopping Cart \| License Skip > DIV > Skip And Complete Later | not seen yet | Needs review | `role button /Skip And Complete Later/` | live site 2026-09-24 |
 | GepPopups | controlledSubstancesConfirmSkipButton | Controlled Substances Form on Shopping Cart > Confirm Skip | not seen yet | Needs review | `role button /Confirm Skip/` | live site 2026-09-24 |
 | GepPopups | feedbackSurveyCloseButton | Close Customer FeedBack survey popup > Close Survey | guess; confirmation page not seen yet | Needs review | `role button /close survey/` | live site 2026-09-24 |

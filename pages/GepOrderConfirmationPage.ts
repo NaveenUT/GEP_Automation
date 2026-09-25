@@ -9,7 +9,8 @@ export class GepOrderConfirmationPage extends BasePage {
 
   // Tosca: Order Number > Order Number
   get orderNumberText(): Locator {
-    return this.page.locator("//div[@data-test-id='orderconfirmation_span_ordernumber']//following::div[@class='caption1-regular']");
+    // following:: matches every later caption1-regular div, so take the first one (the value under the label).
+    return this.page.locator("//div[@data-test-id='orderconfirmation_span_ordernumber']//following::div[@class='caption1-regular']").first();
   }
 
   /** Tosca: Checkout | Order Confirmation (Verify "Your order has been submitted !"). */
@@ -19,6 +20,8 @@ export class GepOrderConfirmationPage extends BasePage {
 
   /** Tosca: FetchOrderNumber in Order Confirmation Page (InnerText -> Ordernumber). */
   async getOrderNumber(): Promise<string> {
+    // The value is filled in shortly after the confirmation message appears.
+    await expect(this.orderNumberText).toHaveText(/\S/);
     const orderNumber = (await this.orderNumberText.innerText()).trim();
     if (!orderNumber) throw new Error('Order number is empty on the order confirmation page.');
     return orderNumber;

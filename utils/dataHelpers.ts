@@ -19,11 +19,11 @@ export function daysFromToday(days: number): Date {
   return date;
 }
 
-/** dd/mm/yyyy, the format the UK site shows in date fields. */
-export function formatDdMmYyyy(date: Date): string {
+/** The date as the site shows it in date fields: mm/dd/yyyy for US, dd/mm/yyyy elsewhere (e.g. UK). */
+export function formatSiteDate(date: Date, country: string): string {
   const dd = String(date.getDate()).padStart(2, '0');
   const mm = String(date.getMonth() + 1).padStart(2, '0');
-  return `${dd}/${mm}/${date.getFullYear()}`;
+  return country === 'US' ? `${mm}/${dd}/${date.getFullYear()}` : `${dd}/${mm}/${date.getFullYear()}`;
 }
 
 /** Tosca (GenY "To remove any buffers"): appends ?<random>=<random> so Akamai doesn't serve a cached page. */

@@ -1,7 +1,7 @@
 import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { Region } from '../utils/config';
-import { formatDdMmYyyy, randomDigits } from '../utils/dataHelpers';
+import { config, Region } from '../utils/config';
+import { formatSiteDate, randomDigits } from '../utils/dataHelpers';
 
 export type RecurringOrderDetails = {
   orderName: string;
@@ -96,7 +96,7 @@ export class GepShippingBillingPage extends BasePage {
     return this.page.getByRole('option', { name: new RegExp(`^${escapeRegExp(frequency)}`) });
   }
 
-  // Tosca: Recurring Order|InputDate > Click to pick a date   | "Begin Processing On"; shows the picked date as dd/mm/yyyy
+  // Tosca: Recurring Order|InputDate > Click to pick a date   | "Begin Processing On"; dd/mm/yyyy (UK) or mm/dd/yyyy (US)
   get recurringStartDateInput(): Locator {
     return this.page.getByPlaceholder('Pick a Date');
   }
@@ -194,7 +194,7 @@ export class GepShippingBillingPage extends BasePage {
     await this.clickIfVisible(this.recurringStartDateConfirmButton, 2000);
 
     await expect(this.recurringStartDateCalendarDialog).toBeHidden();
-    await expect(this.recurringStartDateInput).toHaveValue(formatDdMmYyyy(date));
+    await expect(this.recurringStartDateInput).toHaveValue(formatSiteDate(date, config.country));
   }
 
   /** Types the PO number into "PO#" (the UK site has a single PO field). */

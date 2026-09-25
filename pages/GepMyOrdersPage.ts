@@ -34,9 +34,9 @@ export class GepMyOrdersPage extends BasePage {
       .first();
   }
 
-  // Tosca: Navigate to My Orders Page   | UK site: header "Orders & Returns" opens My Orders directly
+  // Tosca: Navigate to My Orders Page   | header button: "Orders & Returns" (UK), "Order And Returns" (US)
   get headerOrdersAndReturnsButton(): Locator {
-    return this.page.getByRole('button', { name: /Orders & Returns/ });
+    return this.page.getByRole('button', { name: /Orders? (&|And) Returns/ });
   }
 
   // First data row of the Future & Recurring results table (the header row has no <td>)

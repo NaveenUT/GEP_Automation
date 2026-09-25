@@ -54,6 +54,7 @@ export class GepShoppingCartPage extends BasePage {
     await expect(this.cartProceedToShippingBillingButton).toBeVisible();
     await this.cartProceedToShippingBillingButton.click();
 
+    await this.popups.continueInventoryNoticeIfShown();
     await this.popups.continueWithoutFreeItemIfShown();
     // Tosca clicks "Shipping and billing" again after the License / Controlled Substances popups are dismissed.
     if (await this.popups.skipLicenseIfShown()) {

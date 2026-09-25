@@ -28,6 +28,11 @@ export class GepPopups extends BasePage {
     return this.page.locator('[data-test-id="expressCheckoutPopup.ContinueWithoutBtnText4"]');
   }
 
+  // US cart: "Important:" warehouse/charges notice shown after Proceed To Shipping & Billing
+  get inventoryNoticeContinueButton(): Locator {
+    return this.page.locator('[data-test-id="inventoryWHPopup.ContinueWithoutBtnText"]');
+  }
+
   // Tosca: Shopping Cart | License Skip > DIV > Skip And Complete Later
   get licenseSkipAndCompleteLaterButton(): Locator {
     return this.page.getByRole('button', { name: /Skip And Complete Later/i });
@@ -67,6 +72,11 @@ export class GepPopups extends BasePage {
   /** Tosca: Verify Free Item Visible then select. */
   async continueWithoutFreeItemIfShown(): Promise<boolean> {
     return this.clickIfVisible(this.freeItemContinueWithoutButton);
+  }
+
+  /** US cart: "Important:" notice about additional charges. Continue goes on to Shipping & Billing. */
+  async continueInventoryNoticeIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.inventoryNoticeContinueButton);
   }
 
   /** Tosca: If- License Popup Displayed. */

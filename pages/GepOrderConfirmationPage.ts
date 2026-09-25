@@ -23,7 +23,7 @@ export class GepOrderConfirmationPage extends BasePage {
     // The value is filled in shortly after the confirmation message appears.
     await expect(this.orderNumberText).toHaveText(/\S/);
     const orderNumber = (await this.orderNumberText.innerText()).trim();
-    if (!orderNumber) throw new Error('Order number is empty on the order confirmation page.');
+    if (!/\d{5,}/.test(orderNumber)) throw new Error(`Unexpected order number on the confirmation page: "${orderNumber}"`);
     return orderNumber;
   }
 }

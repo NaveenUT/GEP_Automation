@@ -50,6 +50,10 @@ export const config = {
   get productId(): string {
     return requireEnv('PRODUCT_ID');
   },
+  // Tosca: TDM Condition == 'OCOrderStatus' (expected status of a newly submitted order)
+  get expectedOrderStatus(): string {
+    return requireEnv('EXPECTED_ORDER_STATUS');
+  },
   // Tosca: TDM Condition == 'recurringFrequency' (option shown in the recurring frequency dropdown)
   get recurringFrequency(): string {
     return requireEnv('RECURRING_FREQUENCY');

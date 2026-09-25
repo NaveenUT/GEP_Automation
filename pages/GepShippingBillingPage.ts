@@ -51,9 +51,9 @@ export class GepShippingBillingPage extends BasePage {
     return this.page.locator('#poname');
   }
 
-  // Tosca: Enter PO Number > PO# Automatic   | GenX only
+  // Tosca: Enter PO Number > PO# Automatic   | GenX only; UK: the same "PO#" field, empty (not pre-filled)
   get poNumberAutomaticInputGenX(): Locator {
-    return this.todo('GepShippingBillingPage.poNumberAutomaticInputGenX', 'Enter PO Number > PO# Automatic');
+    return this.page.locator('#poname');
   }
 
   // Tosca: Click on Review Order > Review Order

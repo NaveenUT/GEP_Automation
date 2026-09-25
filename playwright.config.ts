@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
+import { config } from './utils/config';
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -24,7 +25,8 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL,
+    // Per COUNTRY (e.g. US_BASE_URL), falling back to BASE_URL; see utils/config.ts
+    baseURL: config.baseUrl,
     // Headed locally so the run can be watched; headless on CI or with HEADLESS=true.
     headless: !!process.env.CI || process.env.HEADLESS === 'true',
     viewport: { width: 1920, height: 1080 },

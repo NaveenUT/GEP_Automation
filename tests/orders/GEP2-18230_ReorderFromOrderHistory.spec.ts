@@ -1,4 +1,4 @@
-import { test } from '../../fixtures/customFixtures';
+import { test } from '../../fixtures/legacyFixtures';
 import { GEP2_18230 } from '../../test-data/testData';
 
 test.describe('GEP2-18230 | E2E of the Reorder option from an order on the Order History page', () => {

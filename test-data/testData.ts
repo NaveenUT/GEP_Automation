@@ -1,4 +1,5 @@
 import type { Region } from '../utils/config';
+import { ORDER_STATUS } from './orderStatus';
 
 /**
  * Fixed test data taken from the Tosca scripts. Environment-specific values
@@ -12,6 +13,13 @@ export const UK_QA = {
   country: 'UK',
   region: 'genx' as Region,
 } as const;
+
+export const US_QA = {
+  baseUrl: 'https://www.us.qa.eschein.com/en-us',
+  country: 'US',
+  region: 'genx' as Region,
+} as const;
+
 
 export const GEP2_36899 = {
   tcId: 'GEP2-36899',
@@ -44,7 +52,7 @@ export const GEP2_18230 = {
       username: 'MedicalTest123',
       password: 'Password@123',
       // Tosca: TDM Condition == 'OCOrderStatus' (status of the newly submitted order)
-      expectedOrderStatus: 'Pending location verification',
+      expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
     },
     {
       name: 'UK Dental',
@@ -53,7 +61,17 @@ export const GEP2_18230 = {
       username: 'ukdental2',
       password: 'Password@123',
       // Tosca: TDM Condition == 'OCOrderStatus' (status of the newly submitted order)
-      expectedOrderStatus: 'Processing',
+      expectedOrderStatus: ORDER_STATUS.PROCESSING,
     },
+    {
+      name: 'US Medical',
+      ...US_QA,
+      // No Medical/Dental domain picker on the US site
+      domain: '',
+      username: 'momani',
+      password: 'support10',
+      // Tosca: TDM Condition == 'OCOrderStatus' (status of the newly submitted order)
+      expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
+    }
   ],
 } as const;

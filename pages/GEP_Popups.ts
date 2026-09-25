@@ -29,6 +29,11 @@ export class GEP_Popups extends BasePage {
     return this.page.getByRole('button', { name: /continue without free item/i });
   }
 
+  // US: "Important: The total shown may not include all applicable charges..." after Proceed To Shipping & Billing
+  get inventoryWarehouseContinueButton(): Locator {
+    return this.page.locator('[data-test-id="inventoryWHPopup.ContinueWithoutBtnText"]');
+  }
+
   // Tosca: Shopping Cart | License Skip > DIV > Skip And Complete Later
   get licenseSkipAndCompleteLaterButton(): Locator {
     return this.page.getByText(/skip and complete later/i);
@@ -73,6 +78,11 @@ export class GEP_Popups extends BasePage {
   /** Tosca: Verify Free Item Visible then select. */
   async continueWithoutFreeItem(): Promise<boolean> {
     return this.clickIfVisible(this.continueWithoutFreeItemButton);
+  }
+
+  /** US: Continue past the "Important" extra-charges popup. */
+  async continueInventoryWarehousePopup(): Promise<boolean> {
+    return this.clickIfVisible(this.inventoryWarehouseContinueButton);
   }
 
   /** Tosca: If- License Popup Displayed. */

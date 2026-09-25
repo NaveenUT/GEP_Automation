@@ -61,6 +61,7 @@ export class GEP_ShoppingCartPage extends BasePage {
     await expect(this.proceedToShippingBillingButton).toBeVisible();
     await this.proceedToShippingBillingButton.click();
 
+    await this.popups.continueInventoryWarehousePopup();
     await this.popups.continueWithoutFreeItem();
     // Tosca clicks "Shipping and billing" again after the License / Controlled Substances popups are dismissed.
     if (await this.popups.skipLicense()) {
@@ -71,7 +72,10 @@ export class GEP_ShoppingCartPage extends BasePage {
     }
     // The first click can be swallowed while the cart is still loading; retry until the page changes.
     await expect(async () => {
-      if (!this.page.url().includes('shippingandbilling')) await this.proceedToShippingBillingButton.click();
+      if (!this.page.url().includes('shippingandbilling')) {
+        await this.proceedToShippingBillingButton.click();
+        await this.popups.continueInventoryWarehousePopup();
+      }
       await expect(this.page).toHaveURL(/shippingandbilling/, { timeout: 10000 });
     }).toPass({ timeout: 60000 });
   }

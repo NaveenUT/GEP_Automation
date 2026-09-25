@@ -17,14 +17,17 @@ export abstract class BasePage {
     throw new Error(`Locator not filled yet: ${key} (Tosca: ${toscaRef}). See LOCATORS_TODO.md`);
   }
 
-  /** True if the element becomes visible within the timeout. */
+  /**
+   * True if the element becomes visible within the timeout. Polls isVisible() instead of
+   * waitFor() so an absent optional element isn't logged as an error step in the reports.
+   */
   protected async isVisibleWithin(locator: Locator, timeout = 5000): Promise<boolean> {
-    try {
-      await locator.waitFor({ state: 'visible', timeout });
-      return true;
-    } catch {
-      return false;
-    }
+    const deadline = Date.now() + timeout;
+    do {
+      if (await locator.first().isVisible()) return true;
+      await this.page.waitForTimeout(250);
+    } while (Date.now() < deadline);
+    return false;
   }
 
   /** For optional popups: click only if the element appears within the timeout. */

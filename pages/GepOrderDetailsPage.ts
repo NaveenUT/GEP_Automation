@@ -2,14 +2,14 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 /** Order Details page, opened with "View & Track" from My Orders. */
-export class GEP_OrderDetailsPage extends BasePage {
+export class GepOrderDetailsPage extends BasePage {
   // Tosca: OrderDetails|Reorder > Reorder
   get reorderLink(): Locator {
     return this.page.getByText('Reorder', { exact: true });
   }
 
-  // Tosca: OrderDetails|ReorderConfirmModal > close
-  get reorderConfirmModalCloseButton(): Locator {
+  // Tosca: OrderDetails|ReorderConfirmModal > close   | reorder confirmation dialog
+  get reorderDialogCloseButton(): Locator {
     return this.page.locator('[data-test-id="view_and_track_my_orders_component_button_1"]');
   }
 
@@ -22,9 +22,9 @@ export class GEP_OrderDetailsPage extends BasePage {
   async reorder(): Promise<void> {
     await expect(this.reorderLink).toBeVisible();
     await this.reorderLink.click();
-    await expect(this.reorderConfirmModalCloseButton).toBeVisible();
-    await this.reorderConfirmModalCloseButton.click();
-    await expect(this.reorderConfirmModalCloseButton).toBeHidden();
+    await expect(this.reorderDialogCloseButton).toBeVisible();
+    await this.reorderDialogCloseButton.click();
+    await expect(this.reorderDialogCloseButton).toBeHidden();
   }
 
   /** Tosca: Verify the Status in order details page ({STRINGTOLOWER} on both sides, so case-insensitive). */

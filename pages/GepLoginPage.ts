@@ -21,7 +21,6 @@ export class GepLoginPage extends BasePage {
   // Text-based and unverified: the UK Medical/Dental users don't get this screen.
   get securityQuestion1Dropdown(): Locator {
     return this.page.getByText('Choose a security question', { exact: false }).first();
-    return this.page.getByText('Choose a security question', { exact: false }).first();
   }
 
   // Tosca: Enter the Answer > Your answer*

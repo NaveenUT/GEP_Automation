@@ -33,6 +33,11 @@ export class GepPopups extends BasePage {
     return this.page.locator('[data-test-id="inventoryWHPopup.ContinueWithoutBtnText"]');
   }
 
+  // Tosca: Orders & Returns > close   | overlay on the My Orders page
+  get ordersAndReturnsDialogCloseButton(): Locator {
+    return this.page.locator('ngb-modal-window').getByRole('button', { name: /close/i });
+  }
+
   // Tosca: Shopping Cart | License Skip > DIV > Skip And Complete Later
   get licenseSkipAndCompleteLaterButton(): Locator {
     return this.page.getByRole('button', { name: /Skip And Complete Later/i });
@@ -93,5 +98,10 @@ export class GepPopups extends BasePage {
   async closeFeedbackSurveyIfShown(): Promise<boolean> {
     if (await this.clickIfVisible(this.feedbackSurveyCloseAltButton, 3000)) return true;
     return this.clickIfVisible(this.feedbackSurveyCloseButton, 3000);
+  }
+
+  /** Tosca: Search the Order -My Orders Page > If "Orders & Returns" close is visible, click it. */
+  async closeOrdersAndReturnsDialogIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.ordersAndReturnsDialogCloseButton, 3000);
   }
 }

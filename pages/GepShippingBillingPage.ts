@@ -53,7 +53,8 @@ export class GepShippingBillingPage extends BasePage {
 
   // Tosca: Enter PO Number > PO# Automatic   | GenX only
   get poNumberAutomaticInputGenX(): Locator {
-    return this.todo('GepShippingBillingPage.poNumberAutomaticInputGenX', 'Enter PO Number > PO# Automatic');
+    // UK and US have a single PO# field for every order type.
+    return this.page.locator('#poname');
   }
 
   // Tosca: Click on Review Order > Review Order
@@ -63,7 +64,7 @@ export class GepShippingBillingPage extends BasePage {
 
   // Tosca: Shipping & Billing | SubmitOrder > Submit Order   | budget notification overlay
   get budgetDialogSubmitOrderButton(): Locator {
-    return this.page.getByRole('dialog').getByRole('button', { name: 'Submit Order' });
+    return this.page.locator('ngb-modal-window').getByRole('button', { name: /submit order/i });
   }
 
   // Shipping & Scheduling > "Immediate" radio (the site remembers the last schedule choice per account)
@@ -220,7 +221,9 @@ export class GepShippingBillingPage extends BasePage {
   async selectPaymentMethod(region: Region, country: string, itPaymentMethod: string): Promise<void> {
     switch (region) {
       case 'genx':
-        // Tosca: Run Only for Gen X Countries
+        // Tosca: Run Only for Gen X Countries. UK pre-selects Bill On Account.
+        await expect(this.paymentMethodDropdown).toBeVisible();
+        if (/bill on account/i.test(await this.paymentMethodDropdown.innerText())) break;
         await this.paymentMethodDropdown.click();
         await this.paymentMethodBillOnAccountOption.click();
         break;

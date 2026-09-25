@@ -4,9 +4,9 @@ import { time } from 'node:console';
 
 /** Account Dashboard > Orders (submitted orders). */
 export class GepMyOrdersPage extends BasePage {
-  // Tosca: Click on Account Dashboard > Account Dashboard
+  // Tosca: Click on Account Dashboard > Account Dashboard   | header "Orders & Returns" / "Order And Returns" button
   get accountDashboardLink(): Locator {
-    return this.todo('GepMyOrdersPage.accountDashboardLink', 'Click on Account Dashboard > Account Dashboard');
+    return this.page.locator('[data-test-id="user_details_component_button_13"]');
   }
 
   // Tosca: Click on Orders > Orders   | UK site: "Submitted Orders" tab on My Orders
@@ -32,6 +32,11 @@ export class GepMyOrdersPage extends BasePage {
       .first()
       .locator('td')
       .first();
+  }
+
+  // Tosca: Orders | View&Track > View & Track   | one per order row; the first row is used
+  get submittedOrdersViewAndTrackLinks(): Locator {
+    return this.page.locator('a[data-test-id="submitted_orders_component_a_13"]:visible');
   }
 
   // Tosca: Navigate to My Orders Page   | header button: "Orders & Returns" (UK), "Order And Returns" (US)
@@ -123,5 +128,24 @@ export class GepMyOrdersPage extends BasePage {
   /** Tosca: Click Manage upcoming CTA (Verify "Manage Upcoming" Exists == True). */
   async expectManageUpcomingVisible(): Promise<void> {
     await expect(this.futureRecurringManageUpcomingLink).toBeVisible();
+  }
+
+  /** Tosca: My Account | My Orders | Search Orders. A just-submitted order can take a while to be searchable, so reload and retry. */
+  async searchSubmittedOrderUntilFound(orderNumber: string): Promise<void> {
+    let attempt = 0;
+    await expect(async () => {
+      if (attempt++ > 0) await this.page.reload();
+      await expect(this.submittedOrdersSearchInput).toBeVisible();
+      await this.submittedOrdersSearchInput.fill(orderNumber);
+      await this.submittedOrdersSearchButton.click();
+      await expect(this.submittedOrdersViewAndTrackLinks.first()).toBeVisible({ timeout: 15000 });
+    }).toPass({ timeout: 180000 });
+  }
+
+  /** Tosca: Click View and Track button in My Account orders section (first order in the list). */
+  async openFirstSubmittedOrderDetails(): Promise<void> {
+    const firstViewAndTrack = this.submittedOrdersViewAndTrackLinks.first();
+    await expect(firstViewAndTrack).toBeVisible();
+    await firstViewAndTrack.click();
   }
 }

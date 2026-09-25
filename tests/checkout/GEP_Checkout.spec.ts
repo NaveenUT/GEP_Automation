@@ -57,7 +57,7 @@ test.describe('GEP Checkout', () => {
 
     await test.step('Open the shopping cart', async () => {
       await homePage.openCartFromHeader();
-      await shoppingCartPage.expectCartPageLoaded();
+      await shoppingCartPage.expectItemInCart();
     });
 
     await test.step('Proceed to Shipping & Billing', async () => {
@@ -149,7 +149,7 @@ test.describe('GEP Checkout', () => {
 
     await test.step('Open the shopping cart', async () => {
       await homePage.openCartFromHeader();
-      await shoppingCartPage.expectCartPageLoaded();
+      await shoppingCartPage.expectItemInCart();
     });
 
     await test.step('Proceed to Shipping & Billing', async () => {

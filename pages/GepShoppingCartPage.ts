@@ -7,8 +7,8 @@ export class GepShoppingCartPage extends BasePage {
   private readonly popups = new GepPopups(this.page);
 
   // Tosca: Waiton for ItemCode to display > Item code goes here
-  get cartItemCodeInput(): Locator {
-    return this.page.getByPlaceholder('Item code goes here');
+  get cartFirstItemCodeText(): Locator {
+    return this.page.locator('[data-test-id="cart_textbox_itemcode"]').first();
   }
 
   // Tosca: Shopping Cart|GuestCartIcon > View Cart
@@ -32,12 +32,20 @@ export class GepShoppingCartPage extends BasePage {
   }
 
   /** Tosca: Waiton for ItemCode to display (the cart page quick-order box). */
-  async expectCartPageLoaded(): Promise<void> {
-    await expect(this.cartItemCodeInput).toBeVisible();
+  async expectItemInCart(): Promise<void> {
+    // Items (e.g. reordered ones) can take a while to show in the cart; reload until they do.
+    await expect(async () => {
+      if (!(await this.isVisibleWithin(this.cartFirstItemCodeText, 10000))) {
+        await this.page.reload();
+        await expect(this.cartFirstItemCodeText).toBeVisible({ timeout: 10000 });
+      }
+    }).toPass({ timeout: 90000 });
   }
 
   /** Tosca: Click on Cart Icon > View Cart. Uses the logged-in variant when present, else the guest one. */
   async openCartFromMiniCartPopup(): Promise<void> {
+    // UK/US: the cart icon opens the cart page directly, there is no mini cart.
+    if (this.page.url().includes('/shoppingcart')) return;
     if (await this.clickIfVisible(this.miniCartLoggedInViewCartButton, 3000)) return;
     await this.miniCartGuestViewCartButton.click();
   }
@@ -63,5 +71,13 @@ export class GepShoppingCartPage extends BasePage {
     if (await this.popups.skipControlledSubstancesIfShown()) {
       await this.cartProceedToShippingBillingButton.click();
     }
+    // The first click can be swallowed while the cart is still loading; retry until the page changes.
+    await expect(async () => {
+      if (!this.page.url().includes('shippingandbilling')) {
+        await this.cartProceedToShippingBillingButton.click();
+        await this.popups.continueInventoryNoticeIfShown();
+      }
+      await expect(this.page).toHaveURL(/shippingandbilling/, { timeout: 10000 });
+    }).toPass({ timeout: 60000 });
   }
 }

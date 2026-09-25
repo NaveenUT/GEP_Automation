@@ -4,22 +4,22 @@ import { BasePage } from './BasePage';
 export class GEP_LoginPage extends BasePage {
   // Tosca: Enter Valid creditionals > Username
   get usernameInput(): Locator {
-    return this.todo('GEP_LoginPage.usernameInput', 'Enter Valid creditionals > Username');
+    return this.page.getByRole('dialog', { name: 'Sign in' }).getByRole('textbox', { name: 'Username', exact: true });
   }
 
   // Tosca: Enter Valid creditionals > Password
   get passwordInput(): Locator {
-    return this.todo('GEP_LoginPage.passwordInput', 'Enter Valid creditionals > Password');
+    return this.page.getByRole('dialog', { name: 'Sign in' }).getByRole('textbox', { name: 'Password', exact: true });
   }
 
   // Tosca: Login | SignIn Button > Sign In
   get signInSubmitButton(): Locator {
-    return this.todo('GEP_LoginPage.signInSubmitButton', 'Login | SignIn Button > Sign In');
+    return this.page.getByRole('dialog', { name: 'Sign in' }).getByRole('button', { name: 'Sign In', exact: true });
   }
 
   // Tosca: Click on the security question > Choose a security question*
   get securityQuestion1Dropdown(): Locator {
-    return this.todo('GEP_LoginPage.securityQuestion1Dropdown', 'Click on the security question > Choose a security question*');
+    return this.page.getByText('Choose a security question*', { exact: true });
   }
 
   // Tosca: Enter the Answer > Your answer*

@@ -5,10 +5,10 @@ import { BasePage } from './BasePage';
 export class GEP_OrderViewAndTrackPage extends BasePage {
   // Tosca: HenrySchein| My Orders | View&Track > Product In Order Page - Primary UOM   | located by the ordered product ID
   primaryUomForProduct(productId: string): Locator {
-    return this.todo(
-      'GEP_OrderViewAndTrackPage.primaryUomForProduct',
-      `HenrySchein| My Orders | View&Track > Product In Order Page - Primary UOM (${productId})`
-    );
+    return this.page
+      .locator('.product-summary')
+      .filter({ hasText: productId })
+      .locator('[data-test-id="viewAndTrackMyOrders.UomText1"]');
   }
 
   // Tosca: Validate Presence of Primary&Secondary UOM_Reference > Secondary UOM   | GenY; reusable block not in export

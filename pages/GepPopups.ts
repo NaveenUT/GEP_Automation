@@ -28,6 +28,16 @@ export class GepPopups extends BasePage {
     return this.page.locator('[data-test-id="expressCheckoutPopup.ContinueWithoutBtnText4"]');
   }
 
+  // Not in the Tosca export: US shows an "Important: The total shown may not include all applicable charges" notice
+  // after Proceed To Shipping & Billing (nested dialogs, so the inner one is used)
+  get additionalChargesNoticeContinueButton(): Locator {
+    return this.page
+      .getByRole('dialog')
+      .filter({ hasText: 'The total shown may not include all applicable charges' })
+      .last()
+      .getByRole('button', { name: 'Continue', exact: true });
+  }
+
   // Tosca: Shopping Cart | License Skip > DIV > Skip And Complete Later
   get licenseSkipAndCompleteLaterButton(): Locator {
     return this.page.getByRole('button', { name: /Skip And Complete Later/i });
@@ -67,6 +77,11 @@ export class GepPopups extends BasePage {
   /** Tosca: Verify Free Item Visible then select. */
   async continueWithoutFreeItemIfShown(): Promise<boolean> {
     return this.clickIfVisible(this.freeItemContinueWithoutButton);
+  }
+
+  /** US: confirms the "total may not include all applicable charges" notice. Not shown on UK. */
+  async continueAdditionalChargesNoticeIfShown(): Promise<boolean> {
+    return this.clickIfVisible(this.additionalChargesNoticeContinueButton);
   }
 
   /** Tosca: If- License Popup Displayed. */

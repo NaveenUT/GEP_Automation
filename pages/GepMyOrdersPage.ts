@@ -30,9 +30,9 @@ export class GepMyOrdersPage extends BasePage {
     return this.page.getByRole('link', { name: 'Account Dashboard' });
   }
 
-  // Tosca: Click on Orders > Orders   | UK: Account Dashboard left menu
+  // Tosca: Click on Orders > Orders   | Account Dashboard left menu: "Orders & Returns" on UK, "Orders" on US
   get ordersTab(): Locator {
-    return this.page.getByRole('menuitem', { name: 'Orders & Returns' });
+    return this.page.getByRole('menuitem', { name: /^My Orders Left Menu Icon Orders/ });
   }
 
   // Tosca: Click on Orders > Orders   | UK site: "Submitted Orders" tab on My Orders
@@ -205,6 +205,9 @@ export class GepMyOrdersPage extends BasePage {
     await expect(this.orderHistorySearchInput).toBeVisible();
     await this.orderHistorySearchInput.fill(orderNumber);
     await this.orderHistorySearchButton.click();
+    // Accounts without pending location verification (e.g. the US QA account) list new orders in the main table
+    if (await this.isVisibleWithin(this.orderNumberLink(orderNumber), 10000)) return;
+    await this.searchSubmittedOrder(orderNumber);
   }
 
   /** Tosca: Navigate to viewandtrackmyorders for orderId Buffer. Opens the order's View & Track page. */

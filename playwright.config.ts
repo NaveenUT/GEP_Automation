@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
+import { config } from './utils/config';
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -24,7 +25,8 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL,
+    // Per COUNTRY (e.g. US_BASE_URL), falling back to BASE_URL; see utils/config.ts
+    baseURL: config.baseUrl,
     headless: true,
     actionTimeout: 30000,
     navigationTimeout: TIMEOUT,

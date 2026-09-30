@@ -9,7 +9,7 @@ function read(name: string): string {
 }
 
 /** Run settings from .env (or the CI environment). */
-export const env = {
+export const ENV = {
   timeout: Number(read('TIMEOUT')) || 60000,
   // Headed locally so the run can be watched; headless on CI or with HEADLESS=true.
   headless: !!process.env.CI || read('HEADLESS') === 'true',

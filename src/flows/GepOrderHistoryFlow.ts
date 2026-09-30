@@ -17,7 +17,7 @@ export class GepOrderHistoryFlow {
     const { header, popups, myOrdersPage } = this.deps;
     await header.openOrdersAndReturns();
     // Tosca: Search the Order -My Orders Page > Orders & Returns close
-    await popups.closeOrdersAndReturnsDialogIfShown();
+    await popups.ordersAndReturns.closeIfShown();
     await myOrdersPage.openSubmittedOrdersTab();
   }
 

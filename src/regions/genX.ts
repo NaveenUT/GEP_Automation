@@ -2,7 +2,7 @@ import type { RegionBehaviour } from './RegionBehaviour';
 import { randomDigits } from '../utils/dataHelpers';
 
 /** Gen X sites (UK, US). */
-export const genX: RegionBehaviour = {
+export const GEN_X: RegionBehaviour = {
   name: 'genx',
   // Tosca: Verify if Country is genx then update values in genxcustomerData
   reviewCreatesUnplacedOrder: true,
@@ -12,11 +12,11 @@ export const genX: RegionBehaviour = {
   async clearLaunchPopups({ home, header, popups, market }) {
     // Tosca: GenX and GenY
     await header.signOutIfLoggedIn();
-    await popups.acceptCookiesIfShown();
+    await popups.cookieBanner.acceptIfShown();
     // Tosca: Domain Check for Genx-UK
     await home.selectDomainIfRequired(market.country, market.domain);
     await header.signOutIfLoggedIn();
-    await popups.confirmLaunchPopupIfShown();
+    await popups.launchPopup.confirmIfShown();
   },
 
   // Tosca: Run Only for Gen X Countries > Bill on Account
@@ -32,7 +32,7 @@ export const genX: RegionBehaviour = {
   expectUomOnOrder: (orderDetails, productId) => orderDetails.expectPrimaryUomDisplayed(productId),
 
   async afterOrderSubmitted(popups) {
-    await popups.closeFeedbackSurveyIfShown();
+    await popups.feedbackSurvey.closeIfShown();
   },
 
   // Tosca: only Gen Z signs out; Gen X just closes the browser

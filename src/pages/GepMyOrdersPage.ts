@@ -1,4 +1,4 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator } from '@playwright/test';
 import { BasePage } from '../core/BasePage';
 import { GepSubmittedOrdersTab } from '../components/orders/GepSubmittedOrdersTab';
 import { GepUnplacedOrdersTab } from '../components/orders/GepUnplacedOrdersTab';
@@ -11,35 +11,35 @@ export class GepMyOrdersPage extends BasePage {
   readonly futureRecurringOrders = new GepFutureRecurringTab(this.page);
 
   // Tosca: Click on Orders > Orders   | "Submitted Orders" tab
-  get submittedOrdersTab(): Locator {
+  private get submittedOrdersTab(): Locator {
     return this.page.locator('[data-test-id="orders_tab_submittedorder"]');
   }
 
   // Tosca: Orders Page Tab > Unplaced Orders
-  get unplacedOrdersTab(): Locator {
+  private get unplacedOrdersTab(): Locator {
     return this.page.locator('[data-test-id="orders_tab_unplacedorder"]');
   }
 
   // Tosca: Recurring Orders > Future & Recurring
-  get futureRecurringTab(): Locator {
+  private get futureRecurringTab(): Locator {
     return this.page.locator('[data-test-id="orders_tab_futureandrecurring"]');
   }
 
   /** Opens the Submitted Orders tab. */
   async openSubmittedOrdersTab(): Promise<void> {
-    await expect(this.submittedOrdersTab).toBeVisible();
-    await this.submittedOrdersTab.click();
+    await this.expectVisible(this.submittedOrdersTab);
+    await this.click(this.submittedOrdersTab);
   }
 
   /** Tosca: Navigate to UnplacedOrders Tab. */
   async openUnplacedOrdersTab(): Promise<void> {
-    await expect(this.unplacedOrdersTab).toBeVisible();
-    await this.unplacedOrdersTab.click();
+    await this.expectVisible(this.unplacedOrdersTab);
+    await this.click(this.unplacedOrdersTab);
   }
 
   /** Tosca: Navigate to Recurring order Tab (Future & Recurring). */
   async openFutureRecurringTab(): Promise<void> {
-    await expect(this.futureRecurringTab).toBeVisible();
-    await this.futureRecurringTab.click();
+    await this.expectVisible(this.futureRecurringTab);
+    await this.click(this.futureRecurringTab);
   }
 }

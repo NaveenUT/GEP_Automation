@@ -2,7 +2,7 @@ import type { RegionBehaviour } from './RegionBehaviour';
 import { COMMON } from '../../data/common';
 
 /** Gen Z sites (e.g. FR, IT, NL). Not verified against a live Gen Z site yet (several locators are still TODO). */
-export const genZ: RegionBehaviour = {
+export const GEN_Z: RegionBehaviour = {
   name: 'genz',
   reviewCreatesUnplacedOrder: false,
 
@@ -10,8 +10,8 @@ export const genZ: RegionBehaviour = {
 
   async clearLaunchPopups({ popups }) {
     // Tosca: GenZ > FR popup, then Accept the Cookie
-    await popups.confirmLaunchPopupIfShown();
-    await popups.acceptCookiesIfShown();
+    await popups.launchPopup.confirmIfShown();
+    await popups.cookieBanner.acceptIfShown();
   },
 
   async selectPaymentMethod(shippingBilling, market) {

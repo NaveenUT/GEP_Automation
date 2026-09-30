@@ -7,7 +7,7 @@ export class GepHomePage extends BasePage {
   private static readonly UK_BROWSE_DOMAINS = ['Medical', 'Dental'];
 
   // Tosca: SignIn > Select Browse > Browse   | "Browse" link on the "<country> <domain>" card of the domain picker
-  domainSelectorBrowseLink(country: string, domain: string): Locator {
+  private domainSelectorBrowseLink(country: string, domain: string): Locator {
     return this.page
       .locator('div.newdomain')
       .filter({ has: this.page.getByText(`${country} ${domain}`, { exact: true }) })
@@ -16,7 +16,7 @@ export class GepHomePage extends BasePage {
 
   /** Tosca: Precondition-Launch the HS Website. */
   async open(url: string): Promise<void> {
-    await this.page.goto(url);
+    await this.openUrl(url);
   }
 
   /** Tosca: Domain Check for Genx-UK. Click Browse on the matching UK Medical/Dental card. */

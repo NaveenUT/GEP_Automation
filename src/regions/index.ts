@@ -1,9 +1,9 @@
 import type { RegionBehaviour, RegionName } from './RegionBehaviour';
-import { genX } from './genX';
-import { genY } from './genY';
-import { genZ } from './genZ';
+import { GEN_X } from './genX';
+import { GEN_Y } from './genY';
+import { GEN_Z } from './genZ';
 
-const REGIONS: Record<RegionName, RegionBehaviour> = { genx: genX, geny: genY, genz: genZ };
+const REGIONS: Record<RegionName, RegionBehaviour> = { genx: GEN_X, geny: GEN_Y, genz: GEN_Z };
 
 export function regionFor(name: RegionName): RegionBehaviour {
   return REGIONS[name];

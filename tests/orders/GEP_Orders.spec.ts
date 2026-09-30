@@ -122,7 +122,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 13: Post-condition: sign out', () => session.signOutAtEnd());
   });
 
-  test.only('GEP2-18230 | E2E of the Reorder option from an order on the Order History page @GEP2-18230 @GEP @orders @reorder @placesOrder @regression', async ({
+  test('GEP2-18230 | E2E of the Reorder option from an order on the Order History page @GEP2-18230 @GEP @orders @reorder @placesOrder @regression', async ({
     session,
     cart,
     checkout,

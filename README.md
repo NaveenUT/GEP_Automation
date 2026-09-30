@@ -21,12 +21,15 @@ Every locator keeps a `// Tosca: <module> > <control>` comment, and every test t
 ```
 src/
   config/      markets.ts (US / UK Dental / UK Medical profiles), env.ts (reads .env)
-  core/        BasePage, BaseComponent (shared helpers, no fixed waits)
-  components/  GepHeader, GepPopups, GepDatePicker, orders/ (Submitted, Unplaced, Future & Recurring tabs)
+  core/        BasePage (every action and check a page uses: click, fill, readText, expectVisible, ...), BaseComponent
+  components/  GepHeader, GepPopups (one entry point for popups/), orders/ (Submitted, Unplaced, Future & Recurring tabs)
+    popups/    one class per popup: GepCookieBanner, GepLaunchPopup, GepAdPopup, GepFreeItemPopup,
+               GepInventoryNoticePopup, GepLicensePopup, GepControlledSubstancesPopup, GepFeedbackSurveyPopup,
+               GepOrdersAndReturnsPopup
   pages/       one page object per page, e.g. GepShippingBillingPage, GepMyOrdersPage
-  regions/     Gen X / Gen Y / Gen Z differences (launch popups, payment, PO rule, UOM, sign out)
+  regions/     GEN_X / GEN_Y / GEN_Z differences (launch popups, payment, PO rule, UOM, sign out)
   flows/       GepSessionFlow, GepCartFlow, GepCheckoutFlow, GepOrderHistoryFlow
-  utils/       random data, dates, cache-buster
+  utils/       dataHelpers (random data, dates, cache-buster), GepDatePicker (picks a date in any calendar field)
 data/          testCases.ts, marketData.ts (products, expected status), common.ts, orderStatus.ts
 fixtures/      gepFixtures.ts: gives each test its market, pages and flows
 tests/         orders/GEP_Orders.spec.ts (order placement + order history)
@@ -96,20 +99,25 @@ US_QA_APP_PASSWORD=...
 
 Switch market by changing `MARKET` in `.env`, e.g. `MARKET=uk-dental-qa` or `MARKET=us-qa,uk-dental-qa`
 (runs every test on both). Browsers are visible locally; set `HEADLESS=true` to hide them (CI is always headless).
+Headed runs open a maximised window that fits your screen; headless runs use a fixed 1920x1080 viewport.
 
 ## Adding a test case
 
 1. Add its fixed data to `data/testCases.ts` (and market-dependent data to `data/marketData.ts`).
 2. Write the test in the feature spec under `tests/` (order tests go in `tests/orders/GEP_Orders.spec.ts`), using the flows. Title: `GEP2-xxxxx | <Jira title> @GEP2-xxxxx @<feature>`.
    Wrap every line in `await test.step('Step N: <what it does>', ...)` with a one-line comment above it.
-3. New screen or control? Add a getter to the page or component with a `// Tosca:` comment. Use
-   `this.todo(...)` until the locator is known, then run `npm run locators`.
+3. New screen or control? Add a `private` getter to the page or component with a `// Tosca:` comment, and a
+   public method that uses it. Use `this.todo(...)` until the locator is known, then run `npm run locators`.
 4. Something that differs per Gen X / Y / Z goes in `src/regions/`, not in the test.
 
 ## Conventions
 
 - Classes `Gep<Name>`, one per file. Locator getters are `<area><Element><Type>`
-  (`headerCartIcon`, `poNumberInput`), and names are unique across the framework.
+  (`headerCartIcon`, `poNumberInput`, `pdpUomDropdown`), and names are unique across the framework.
+- Locators are `private`: flows and tests only use a page's public methods.
+- Pages never call Playwright directly: actions and checks go through the `BasePage` methods
+  (`click`, `fill`, `typeLikeUser`, `readText`, `expectVisible`, `expectText`, `expectUrl`, `retryUntilPasses`, ...).
+- Constants are `UPPER_SNAKE_CASE` (`GEP2_36899`, `MARKETS`, `ENV`, `GEN_X`); variables and properties stay camelCase.
 - Methods start with a verb: `open…`, `select…`, `enter…`, `click…`, `expect…` (assertion), `get…` (returns a value),
   and `…IfShown` for optional popups.
 - Prefer `data-test-id` or role-based locators; no fixed waits (`waitForTimeout`), use `expect(...)` or `toPass()` retries.
@@ -117,7 +125,7 @@ Switch market by changing `MARKET` in `.env`, e.g. `MARKET=uk-dental-qa` or `MAR
 
 ## Known gaps
 
-- `LOCATORS_TODO.md` lists the locators that are still `TODO`. They're mostly Gen Y / Gen Z screens, the
-  Unplaced Orders table (GEP2-18559) and the cart subtotal.
+- `LOCATORS_TODO.md` lists the locators that are still `TODO`. They're mostly Gen Y / Gen Z screens and
+  optional popups; the US order paths are all filled.
 - GEP2-22324 has a two-UOM product for US (5704279) and UK Medical (DIS40302), not yet for UK Dental.
 - UK Medical has no generic / bulk-order product IDs yet in `data/marketData.ts`.

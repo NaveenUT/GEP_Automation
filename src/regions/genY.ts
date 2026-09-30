@@ -2,7 +2,7 @@ import type { RegionBehaviour } from './RegionBehaviour';
 import { withCacheBuster } from '../utils/dataHelpers';
 
 /** Gen Y sites. Not verified against a live Gen Y site yet (several locators are still TODO). */
-export const genY: RegionBehaviour = {
+export const GEN_Y: RegionBehaviour = {
   name: 'geny',
   reviewCreatesUnplacedOrder: false,
 
@@ -12,11 +12,11 @@ export const genY: RegionBehaviour = {
   async clearLaunchPopups({ header, popups }) {
     // Tosca: GenX and GenY
     await header.signOutIfLoggedIn();
-    await popups.acceptCookiesIfShown();
+    await popups.cookieBanner.acceptIfShown();
     // Tosca: "Close the ad popup" is in the Else branch, which only GenY reaches
-    await popups.closeAdPopupIfShown();
+    await popups.adPopup.closeIfShown();
     await header.signOutIfLoggedIn();
-    await popups.confirmLaunchPopupIfShown();
+    await popups.launchPopup.confirmIfShown();
   },
 
   // Tosca: Else geny > Bill on Account_GenY

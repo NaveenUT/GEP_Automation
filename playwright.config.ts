@@ -1,10 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { GepOptions } from './fixtures/gepFixtures';
-import { env, resolveMarket, selectedMarketIds } from './src/config/env';
+import { ENV, resolveMarket, selectedMarketIds } from './src/config/env';
+
+// Headless (CI, HEADLESS=true): fixed 1920x1080 so every run renders the same layout.
+// Headed (local): a maximised window sized to the screen, so the whole page stays in view.
+// deviceScaleFactor is dropped because Playwright rejects it with a null viewport.
+const { deviceScaleFactor: _deviceScaleFactor, ...desktopChrome } = devices['Desktop Chrome'];
+const browserWindow = ENV.headless
+  ? { viewport: { width: 1920, height: 1080 } }
+  : { viewport: null, launchOptions: { args: ['--start-maximized'] } };
 
 export default defineConfig<GepOptions>({
   testDir: './tests',
-  timeout: env.timeout,
+  timeout: ENV.timeout,
   expect: {
     timeout: 10000,
   },
@@ -21,10 +29,9 @@ export default defineConfig<GepOptions>({
   ],
 
   use: {
-    headless: env.headless,
-    viewport: { width: 1920, height: 1080 },
+    headless: ENV.headless,
     actionTimeout: 30000,
-    navigationTimeout: env.timeout,
+    navigationTimeout: ENV.timeout,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
@@ -35,8 +42,8 @@ export default defineConfig<GepOptions>({
   projects: selectedMarketIds().map((marketId) => ({
     name: marketId,
     use: {
-      ...devices['Desktop Chrome'],
-      viewport: { width: 1920, height: 1080 },
+      ...desktopChrome,
+      ...browserWindow,
       marketId,
       baseURL: resolveMarket(marketId).baseUrl,
     },

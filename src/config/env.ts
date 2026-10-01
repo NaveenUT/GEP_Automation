@@ -54,3 +54,52 @@ export function credentialsFor(market: Market, tcId?: string): Credentials {
   };
   return { username: lookup('APP_USERNAME'), password: lookup('APP_PASSWORD') };
 }
+
+// ---------------------------------------------------------------- Demo Web Shop (second application)
+
+/** Demo Web Shop site; DEMO_WEBSHOP_BASE_URL in .env overrides it. */
+export function demoWebshopUrl(): string {
+  return read('DEMO_WEBSHOP_BASE_URL') || 'https://demowebshop.tricentis.com';
+}
+
+/** Demo Web Shop login, from .env only: DEMO_WEBSHOP_USERNAME / DEMO_WEBSHOP_PASSWORD (Tosca {PL[Email]} / {PL[Password]}). */
+export function demoWebshopCredentials(): Credentials {
+  const username = read('DEMO_WEBSHOP_USERNAME');
+  const password = read('DEMO_WEBSHOP_PASSWORD');
+  if (!username || !password) {
+    throw new Error('No Demo Web Shop login. Set DEMO_WEBSHOP_USERNAME and DEMO_WEBSHOP_PASSWORD in .env (see .env.example).');
+  }
+  return { username, password };
+}
+
+export type MailServer = { host: string; port: number; secure: boolean; user: string; password: string };
+
+export type DemoMailSettings = {
+  /** Sender mailbox (SMTP), steps 22-23 */
+  sender: MailServer & { from: string };
+  /** Receiver mailbox (IMAP), steps 24-25 */
+  receiver: MailServer & { address: string };
+};
+
+/**
+ * Sender (SMTP) and receiver (IMAP) mailboxes for TC04, from .env:
+ *   DEMO_MAIL_SMTP_HOST, DEMO_MAIL_SMTP_PORT (587), DEMO_MAIL_SMTP_USER, DEMO_MAIL_SMTP_PASSWORD, DEMO_MAIL_FROM (= SMTP user)
+ *   DEMO_MAIL_IMAP_HOST, DEMO_MAIL_IMAP_PORT (993), DEMO_MAIL_IMAP_USER, DEMO_MAIL_IMAP_PASSWORD, DEMO_MAIL_TO (= IMAP user)
+ * Returns undefined when any required value is missing.
+ */
+export function demoMailSettings(): DemoMailSettings | undefined {
+  const smtpHost = read('DEMO_MAIL_SMTP_HOST');
+  const smtpUser = read('DEMO_MAIL_SMTP_USER');
+  const smtpPassword = read('DEMO_MAIL_SMTP_PASSWORD');
+  const imapHost = read('DEMO_MAIL_IMAP_HOST');
+  const imapUser = read('DEMO_MAIL_IMAP_USER');
+  const imapPassword = read('DEMO_MAIL_IMAP_PASSWORD');
+  if (!smtpHost || !smtpUser || !smtpPassword || !imapHost || !imapUser || !imapPassword) return undefined;
+
+  const smtpPort = Number(read('DEMO_MAIL_SMTP_PORT')) || 587;
+  const imapPort = Number(read('DEMO_MAIL_IMAP_PORT')) || 993;
+  return {
+    sender: { host: smtpHost, port: smtpPort, secure: smtpPort === 465, user: smtpUser, password: smtpPassword, from: read('DEMO_MAIL_FROM') || smtpUser },
+    receiver: { host: imapHost, port: imapPort, secure: true, user: imapUser, password: imapPassword, address: read('DEMO_MAIL_TO') || imapUser },
+  };
+}

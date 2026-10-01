@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { GepOptions } from './fixtures/gepFixtures';
-import { ENV, resolveMarket, selectedMarketIds } from './src/config/env';
+import { ENV, demoWebshopUrl, resolveMarket, selectedMarketIds } from './src/config/env';
 
 // Headless (CI, HEADLESS=true): fixed 1920x1080 so every run renders the same layout.
 // Headed (local): a maximised window sized to the screen, so the whole page stays in view.
@@ -26,6 +26,7 @@ export default defineConfig<GepOptions>({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['monocart-reporter', { name: 'Automation Test Report', outputFile: 'monocart-report/index.html' }],
+    ['json', { outputFile: 'test-results/results.json' }],
   ],
 
   use: {
@@ -38,16 +39,29 @@ export default defineConfig<GepOptions>({
     ignoreHTTPSErrors: true,
   },
 
-  // One project per market selected with MARKET in .env (default us-qa), e.g. MARKET=us-qa,uk-dental-qa.
-  projects: selectedMarketIds().map((marketId) => ({
-    name: marketId,
-    use: {
-      ...desktopChrome,
-      ...browserWindow,
-      marketId,
-      baseURL: resolveMarket(marketId).baseUrl,
+  projects: [
+    // GEP: one project per market selected with MARKET in .env (default us-qa), e.g. MARKET=us-qa,uk-dental-qa.
+    ...selectedMarketIds().map((marketId) => ({
+      name: marketId,
+      testIgnore: '**/demo/**',
+      use: {
+        ...desktopChrome,
+        ...browserWindow,
+        marketId,
+        baseURL: resolveMarket(marketId).baseUrl,
+      },
+    })),
+    // Demo Web Shop (second application): only tests/demo. Run with --project=demo-webshop.
+    {
+      name: 'demo-webshop',
+      testDir: './tests/demo',
+      use: {
+        ...desktopChrome,
+        ...browserWindow,
+        baseURL: demoWebshopUrl(),
+      },
     },
-  })),
+  ],
 
   outputDir: 'test-results',
 });

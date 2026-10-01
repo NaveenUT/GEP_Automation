@@ -70,6 +70,49 @@ All five are in one feature file: each places an order and verifies it in My Ord
 Every test places a real order on the QA site (tag `@placesOrder`). A future group that checks checkout
 itself (payment options, PO validation, totals) without My Orders would get its own file, e.g. `tests/checkout/`.
 
+## Second application: Demo Web Shop
+
+Manual test cases from Tosca execution reports for https://demowebshop.tricentis.com live next to GEP and share
+only `src/core` (BasePage), `src/config` and `src/utils`:
+
+```
+src/demo/        components/DemoHeader, pages/ (Home, Login, Category, MyAccount, Orders), flows/DemoSessionFlow,
+                 utils/ orderReportWorkbook (Excel), orderReportMail (send by SMTP, check by IMAP)
+data/demo/       tc01.json, tc02.json, tc04.json (one JSON per test case: category, sizes, report folder, ...), demoTestCases.ts (loads them)
+fixtures/        demoFixtures.ts
+tests/demo/      TC01_VerifyDisplayBySize.spec.ts, TC02_VerifyDigitalDownload.spec.ts, TC03_OrderByPaymentMethod.spec.ts, TC04_GenerateOrderReportAndSendEmail.spec.ts
+```
+
+| ID | Test | Spec |
+|---|---|---|
+| TC01 | Display by size 4, 8 and 12 on Apparel & Shoes shows at most that many products (one test per size) | `tests/demo/TC01_VerifyDisplayBySize.spec.ts` |
+| TC02 | Digital download: "Music 2" sample file Poker_Face_1.txt is downloaded with the expected text | `tests/demo/TC02_VerifyDigitalDownload.spec.ts` |
+| TC03 | Order a Books > Fiction item by Cash on Delivery / Credit Card / Check Money Order / Purchase Order (one test each; places 4 demo orders) | `tests/demo/TC03_OrderByPaymentMethod.spec.ts` |
+| TC04 | Order report in Excel from My Account → Orders, emailed and found in the receiver mailbox | `tests/demo/TC04_GenerateOrderReportAndSendEmail.spec.ts` |
+
+It runs as its own Playwright project, `demo-webshop` (`npm run test:demo`); the GEP market projects never run it.
+Test values (e.g. the TC01 category and sizes, the TC04 report folder) are in `data/demo/tc01.json` / `tc04.json`. Logins and mailboxes
+go in `.env` (`DEMO_WEBSHOP_*`, `DEMO_MAIL_*`, see `.env.example`). Without the mailbox
+settings TC04 writes and checks the Excel report, attaches it to the HTML report, and is then marked skipped.
+
+## Flow check against the manual test cases (Loop 2)
+
+`npm run verify_flow` (or `node verify_flow.mjs TC01`) checks every spec against its manual test case in
+`manual-test-cases/`, which is the source of truth and is never edited by the check:
+
+1. **Structure** (script): every manual step has a `test.step('Step N: …')` (or a `Steps a-b` range), in the same
+   order, with no extra steps.
+2. **Meaning** (AI, read-only): each step does the manual action with the same data and asserts the expected result.
+3. Differences are fixed by an AI fixer (spec, pages, data only), then checked again: up to 3 attempts, stopping early
+   when the same differences come back.
+
+Results: `flow-check-report.md`, and `review-needed/<manual test case>.md` (step, spec line, type, reason) for
+anything still different. Options: `--no-ai` (structure only), `--no-fix`, `--runtime` (also lists the manual steps
+that did not run in the last `test-results/results.json`). The AI steps need the `claude` CLI.
+
+A spec links to its manual case with `// @manual manual-test-cases/<file>.md`. A merged step range or a step with no
+code of its own (e.g. "close the browser") needs `// @flow-deviation <steps>: <reason>` right above it.
+
 ## Setup
 
 ```bash
@@ -90,8 +133,9 @@ US_QA_APP_PASSWORD=...
 
 | Command | What it does |
 |---|---|
-| `npm test` | All tests on the market(s) in `MARKET` (default `us-qa`) |
-| `npm run test:orders` | The order tests (currently all tests) |
+| `npm test` | Everything: the GEP tests on the market(s) in `MARKET` (default `us-qa`) plus the Demo Web Shop tests |
+| `npm run test:orders` | The GEP order tests |
+| `npm run test:demo` | The Demo Web Shop tests (project `demo-webshop`) |
 | `npx playwright test --grep @GEP2-36899` | One test case |
 | `npm run report` | Open the last HTML report (also `monocart-report/index.html`) |
 | `npm run check` | Type check + list tests (what CI runs) |

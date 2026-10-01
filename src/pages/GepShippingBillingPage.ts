@@ -23,9 +23,9 @@ export class GepShippingBillingPage extends BasePage {
 
   // ---------------------------------------------------------------- Shipping & Scheduling
 
-  // Shipping & Scheduling > "Immediate" radio (the site remembers the last schedule choice per account)
+  // Shipping & Scheduling > "Immediate" radio (the site remembers the last schedule choice per account)   | reordered carts can split into multiple "Shipped From ..." sections, each with its own Immediate radio; the first section is the one that also offers Delayed/Recurring, so it is the one this check needs to reset
   private get immediateScheduleRadio(): Locator {
-    return this.page.locator('input[type="radio"][value="IMMEDIATE"]');
+    return this.page.locator('input[type="radio"][value="IMMEDIATE"]').first();
   }
 
   // Tosca: Select Recurring Tab > RECURRING   | "Recurring" radio under Shipping & Scheduling
@@ -68,9 +68,9 @@ export class GepShippingBillingPage extends BasePage {
 
   // ---------------------------------------------------------------- Payment Method
 
-  // Tosca: GenX|Shipping & Billing | Payment method > downward arrow
+  // Tosca: GenX|Shipping & Billing | Payment method > downward arrow   | reordered carts can split into multiple "Shipped From ..." sections, each with its own Payment Method dropdown; the first section is the one Bill on Account applies to (partner-fulfilled sections force credit card), so it is the one this check needs
   private get paymentMethodDropdown(): Locator {
-    return this.page.locator('mat-select[formcontrolname="paymentformcontrolvalue"]');
+    return this.page.locator('mat-select[formcontrolname="paymentformcontrolvalue"]').first();
   }
 
   // Tosca: GenX|Shipping & Billing | Payment method > Bill on Account   | "Bill On Account" (UK), "Bill on Account" (US)

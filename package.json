@@ -5,11 +5,15 @@
   "scripts": {
     "test": "playwright test",
     "test:orders": "playwright test tests/orders",
+    "test:demo": "playwright test --project=demo-webshop",
     "typecheck": "tsc --noEmit",
     "list": "playwright test --list --reporter=list",
     "locators": "node scripts/generate-locators-report.js",
     "report": "playwright show-report",
-    "check": "npm run typecheck && npm run list"
+    "check": "npm run typecheck && npm run list",
+    "heal_single_TS": "node heal_single_TS.mjs",
+    "verify_flow": "node verify_flow.mjs"
+
   },
   "keywords": [],
   "author": "",
@@ -18,8 +22,12 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.2",
+    "@types/nodemailer": "^8.0.2",
     "dotenv": "^18.0.3",
+    "exceljs": "^4.4.0",
+    "imapflow": "^2.1.2",
     "monocart-reporter": "^2.13.1",
+    "nodemailer": "^10.0.13",
     "typescript": "^7.0.2"
   }
 }

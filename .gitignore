@@ -5,3 +5,4 @@ monocart-report/
 test-results/
 blob-report/
 playwright/.cache/
+reports/

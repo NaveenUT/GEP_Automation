@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator, Download, expect } from '@playwright/test';
 
 /**
  * Shared helpers for page objects and components. Pages build their actions and checks from these
@@ -52,6 +52,11 @@ export abstract class BasePage {
     return this.page.url();
   }
 
+  /** Screenshot of the visible page, e.g. to attach to the report as evidence. */
+  async takeScreenshot(): Promise<Buffer> {
+    return this.page.screenshot();
+  }
+
   /** Presses a key on the keyboard (for example "Enter"), wherever the focus is. */
   protected async pressKey(key: string): Promise<void> {
     await this.page.keyboard.press(key);
@@ -96,9 +101,20 @@ export abstract class BasePage {
     await expect(locator).toHaveValue(value);
   }
 
+  /** Clicks an element that starts a file download and returns the download once it has started. */
+  protected async clickAndWaitForDownload(locator: Locator): Promise<Download> {
+    const [download] = await Promise.all([this.page.waitForEvent('download'), locator.click()]);
+    return download;
+  }
+
   /** The element's visible text, trimmed. */
   protected async readText(locator: Locator): Promise<string> {
     return (await locator.innerText()).trim();
+  }
+
+  /** How many elements the locator matches right now (no waiting). */
+  protected async countOf(locator: Locator): Promise<number> {
+    return locator.count();
   }
 
   // ---------------------------------------------------------------- Waits and checks (web-first, they retry)
@@ -109,6 +125,11 @@ export abstract class BasePage {
 
   protected async expectHidden(locator: Locator, timeout?: number): Promise<void> {
     await expect(locator).toBeHidden(timeoutOption(timeout));
+  }
+
+  /** Waits until at least part of the element is inside the visible area of the page (e.g. after scrolling). */
+  protected async expectInViewport(locator: Locator, timeout?: number): Promise<void> {
+    await expect(locator).toBeInViewport(timeoutOption(timeout));
   }
 
   protected async expectEnabled(locator: Locator, timeout?: number): Promise<void> {
@@ -129,6 +150,11 @@ export abstract class BasePage {
 
   protected async expectValue(locator: Locator, value: string, timeout?: number): Promise<void> {
     await expect(locator).toHaveValue(value, timeoutOption(timeout));
+  }
+
+  /** Waits until the browser tab title matches, e.g. /Demo Web Shop/. */
+  protected async expectTitle(pattern: RegExp, timeout?: number): Promise<void> {
+    await expect(this.page).toHaveTitle(pattern, timeoutOption(timeout));
   }
 
   /** Waits until the page address matches, e.g. /revieworder/. */

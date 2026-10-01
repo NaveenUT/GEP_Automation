@@ -1,0 +1,46 @@
+{
+  "tcId": "TC03",
+  "category": {
+    "name": "Books",
+    "slug": "books"
+  },
+  "productLink": "Fiction",
+  "productPosition": 1,
+  "addToCartPosition": 1,
+  "cartRowPosition": 1,
+  "successMessage": "Your order has been successfully processed!",
+  "variants": [
+    {
+      "toscaName": "TC03_Demowebshop_Order By Cashon Delivery",
+      "paymentOption": "Payments.CashOnDelivery",
+      "sitePaymentValue": "Payments.CashOnDelivery",
+      "paymentDetails": { "type": "none" }
+    },
+    {
+      "toscaName": "TC03_Demowebshop_Order By Credit Card",
+      "paymentOption": "Payments.Credit Card",
+      "sitePaymentValue": "Payments.Manual",
+      "paymentDetails": {
+        "type": "creditCard",
+        "creditCardType": "Visa",
+        "cardholderName": "Barbara Gordon",
+        "cardNumber": "4485564059489345",
+        "expireMonth": "04",
+        "expireYear": "2022",
+        "cardCode": "123"
+      }
+    },
+    {
+      "toscaName": "TC03_Demowebshop_Order By Check Money Order",
+      "paymentOption": "Payments.CheckMoneyOrder",
+      "sitePaymentValue": "Payments.CheckMoneyOrder",
+      "paymentDetails": { "type": "none" }
+    },
+    {
+      "toscaName": "TC03_Demowebshop_Order By Purchase Order",
+      "paymentOption": "Payments.PurchaseOrder",
+      "sitePaymentValue": "Payments.PurchaseOrder",
+      "paymentDetails": { "type": "purchaseOrder", "poNumberDigits": 6 }
+    }
+  ]
+}

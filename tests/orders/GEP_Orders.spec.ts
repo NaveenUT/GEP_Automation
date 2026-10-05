@@ -6,7 +6,7 @@ import { GEP2_18230, GEP2_18257, GEP2_18559, GEP2_22324, GEP2_36899 } from '../.
  * Order placement and order history: every test places an order (normal, recurring, reorder,
  * from an unplaced order) and verifies it in My Orders / Order History.
  */
-test.describe('GEP Orders', () => {
+test.describe.only('GEP Orders', () => {
   // Full E2E (login, order, verify in order history) on the QA sites is slow.
   test.describe.configure({ timeout: 10 * 60 * 1000 });
 
@@ -21,7 +21,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
     // Sign in with the user from .env (GEP2_36899 override if set) and wait until the account menu shows.
-    await test.step('Step 2: Sign in', () => session.login(GEP2_36899.tcId));
+    await test.step('Step 2: Sign in', () => session.login());
 
     // Start from an empty cart so only this test's product is ordered.
     await test.step('Step 3: Clear the cart if it is not empty', () => cart.emptyCart());
@@ -72,7 +72,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
     // Sign in with the user from .env and wait until the account menu shows.
-    await test.step('Step 2: Sign in', () => session.login(GEP2_18257.tcId));
+    await test.step('Step 2: Sign in', () => session.login());
 
     // Start from an empty cart so only this test's product is ordered.
     await test.step('Step 3: Clear the cart if it is not empty', () => cart.emptyCart());
@@ -134,7 +134,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
     // Sign in with the user from .env and wait until the account menu shows.
-    await test.step('Step 2: Sign in', () => session.login(GEP2_18230.tcId));
+    await test.step('Step 2: Sign in', () => session.login());
 
     // Start from an empty cart so only the reordered items are ordered.
     await test.step('Step 3: Clear the cart if it is not empty', () => cart.emptyCart());
@@ -196,7 +196,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
     // Sign in with the user from .env and wait until the account menu shows.
-    await test.step('Step 2: Sign in', () => session.login(GEP2_18559.tcId));
+    await test.step('Step 2: Sign in', () => session.login());
 
     // Start from an empty cart so the unplaced order only holds this test's product.
     await test.step('Step 3: Clear the cart if it is not empty', () => cart.emptyCart());
@@ -281,7 +281,7 @@ test.describe('GEP Orders', () => {
     await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
     // Sign in with the user from .env and wait until the account menu shows.
-    await test.step('Step 2: Sign in', () => session.login(GEP2_22324.tcId));
+    await test.step('Step 2: Sign in', () => session.login());
 
     // Start from an empty cart so only this test's product is ordered.
     await test.step('Step 3: Clear the cart if it is not empty', () => cart.emptyCart());

@@ -30,10 +30,13 @@ export class GepSessionFlow {
     await region.clearLaunchPopups({ home: homePage, header, popups, market });
   }
 
-  /** Tosca: Sign in. `tcId` picks per-test credentials from .env (see credentialsFor). */
-  async login(tcId?: string): Promise<void> {
+  /**
+   * Tosca: Sign in. Signs in as the market's 'default' user, or the user with this `userKey`
+   * (test_accounts.user_key in the test data database, see credentialsFor).
+   */
+  async login(userKey?: string): Promise<void> {
     const { market, header, loginPage } = this.deps;
-    const { username, password } = credentialsFor(market, tcId);
+    const { username, password } = await credentialsFor(market, userKey);
     await header.clickSignIn();
     await loginPage.login(username, password);
     await loginPage.answerSecurityQuestionsIfShown(COMMON.securityAnswer);

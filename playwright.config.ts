@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { GepOptions } from './fixtures/gepFixtures';
-import { ENV, demoWebshopUrl, resolveMarket, selectedMarketIds } from './src/config/env';
+import { ENV, demoWebshopUrl, selectedMarketIds, selectedTestEnv } from './src/config/env';
 
 // Headless (CI, HEADLESS=true): fixed 1920x1080 so every run renders the same layout.
 // Headed (local): a maximised window sized to the screen, so the whole page stays in view.
@@ -9,6 +9,11 @@ const { deviceScaleFactor: _deviceScaleFactor, ...desktopChrome } = devices['Des
 const browserWindow = ENV.headless
   ? { viewport: { width: 1920, height: 1080 } }
   : { viewport: null, launchOptions: { args: ['--start-maximized'] } };
+
+// TEST_ENV (default qa). QA keeps the usual folders (the heal and flow-check scripts read test-results/results.json);
+// other environments write to <folder>-<env>, so QA, UAT and prod can run side by side without overwriting each other.
+const testEnv = selectedTestEnv();
+const runFolder = (folder: string) => (testEnv === 'qa' ? folder : `${folder}-${testEnv}`);
 
 export default defineConfig<GepOptions>({
   testDir: './tests',
@@ -24,9 +29,9 @@ export default defineConfig<GepOptions>({
 
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['monocart-reporter', { name: 'Automation Test Report', outputFile: 'monocart-report/index.html' }],
-    ['json', { outputFile: 'test-results/results.json' }],
+    ['html', { outputFolder: runFolder('playwright-report'), open: 'never' }],
+    ['monocart-reporter', { name: 'Automation Test Report', outputFile: `${runFolder('monocart-report')}/index.html` }],
+    ['json', { outputFile: `${runFolder('test-results')}/results.json` }],
   ],
 
   use: {
@@ -40,15 +45,18 @@ export default defineConfig<GepOptions>({
   },
 
   projects: [
-    // GEP: one project per market selected with MARKET in .env (default us-qa), e.g. MARKET=us-qa,uk-dental-qa.
-    ...selectedMarketIds().map((marketId) => ({
-      name: marketId,
+    // GEP: one project per market selected with MARKET in .env (default us), named <env>-<market>, e.g. qa-us.
+    // The site URL comes from the test data database (market fixture), so there is no baseURL here.
+    ...selectedMarketIds(testEnv).map((marketId) => ({
+      name: `${testEnv}-${marketId}`,
       testIgnore: '**/demo/**',
+      // GEP tests place real orders: on prod only the tests tagged @prod-safe run.
+      ...(testEnv === 'prod' ? { grep: /@prod-safe/ } : {}),
       use: {
         ...desktopChrome,
         ...browserWindow,
+        testEnv,
         marketId,
-        baseURL: resolveMarket(marketId).baseUrl,
       },
     })),
     // Demo Web Shop (second application): only tests/demo. Run with --project=demo-webshop.
@@ -63,5 +71,5 @@ export default defineConfig<GepOptions>({
     },
   ],
 
-  outputDir: 'test-results',
+  outputDir: runFolder('test-results'),
 });

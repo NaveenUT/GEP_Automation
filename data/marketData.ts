@@ -1,7 +1,7 @@
-import type { MarketId } from '../src/config/markets';
+import type { MarketId, TestEnv } from '../src/config/markets';
 import { ORDER_STATUS } from './orderStatus';
 
-/** Test data that depends on the market (Tosca TDM rows per {CP[Country]}). No credentials here: those live in .env. */
+/** Test data that depends on the market (Tosca TDM rows per {CP[Country]}). No credentials here: those live in the test data database. */
 export type MarketData = {
   products: {
     /** Tosca: TDM Condition == 'Generic' (product to order) */
@@ -17,30 +17,36 @@ export type MarketData = {
   recurringFrequency: string;
 };
 
-const MARKET_DATA: Record<MarketId, MarketData> = {
-  'us-qa': {
-    products: { generic: '1127079', bulkOrder: '1127081', twoUom: '5704279' },
-    expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
-    recurringFrequency: 'Bi-Weekly',
+/** Per environment, then per market. Add a UAT or prod block when those sites get their own products. */
+const MARKET_DATA: Record<TestEnv, Partial<Record<MarketId, MarketData>>> = {
+  qa: {
+    us: {
+      products: { generic: '1127079', bulkOrder: '1127081', twoUom: '5704279' },
+      expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
+      recurringFrequency: 'Bi-Weekly',
+    },
+    'uk-dental': {
+      products: { generic: '143513', bulkOrder: '9884830', twoUom: '' },
+      expectedOrderStatus: ORDER_STATUS.PROCESSING,
+      recurringFrequency: 'Bi-Weekly',
+    },
+    'uk-medical': {
+      products: { generic: '', bulkOrder: '', twoUom: 'DIS40302' },
+      expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
+      recurringFrequency: 'Bi-Weekly',
+    },
   },
-  'uk-dental-qa': {
-    products: { generic: '143513', bulkOrder: '9884830', twoUom: '' },
-    expectedOrderStatus: ORDER_STATUS.PROCESSING,
-    recurringFrequency: 'Bi-Weekly',
-  },
-  'uk-medical-qa': {
-    products: { generic: '', bulkOrder: '', twoUom: 'DIS40302' },
-    expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
-    recurringFrequency: 'Bi-Weekly',
-  },
+  uat: {},
+  prod: {},
 };
 
 /** Market data where an empty value fails with a clear message when a test reads it. */
-export function getMarketData(marketId: MarketId): MarketData {
-  const data = MARKET_DATA[marketId];
+export function getMarketData(env: TestEnv, marketId: MarketId): MarketData {
+  const data = MARKET_DATA[env][marketId];
+  if (!data) throw new Error(`No test data for ${env}/${marketId}. Add it in data/marketData.ts.`);
   const required = (key: keyof MarketData['products']) => {
     const value = data.products[key];
-    if (!value) throw new Error(`products.${key} is not set for market "${marketId}". Add it in data/marketData.ts.`);
+    if (!value) throw new Error(`products.${key} is not set for ${env}/${marketId}. Add it in data/marketData.ts.`);
     return value;
   };
   return {

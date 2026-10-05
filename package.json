@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit",
     "list": "playwright test --list --reporter=list",
     "locators": "node scripts/generate-locators-report.js",
+    "db:check": "node scripts/check-test-data-db.mjs",
     "report": "playwright show-report",
     "check": "npm run typecheck && npm run list",
     "heal_single_TS": "node heal_single_TS.mjs",
     "verify_flow": "node verify_flow.mjs"
-
   },
   "keywords": [],
   "author": "",
@@ -21,12 +21,14 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@types/mssql": "^12.3.0",
     "@types/node": "^26.6.2",
     "@types/nodemailer": "^8.0.2",
     "dotenv": "^18.0.3",
     "exceljs": "^4.4.0",
     "imapflow": "^2.1.2",
     "monocart-reporter": "^2.13.1",
+    "mssql": "^12.7.3",
     "nodemailer": "^10.0.13",
     "typescript": "^7.0.2"
   }

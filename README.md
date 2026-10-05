@@ -30,7 +30,8 @@ src/
   regions/     GEN_X / GEN_Y / GEN_Z differences (launch popups, payment, PO rule, UOM, sign out)
   flows/       GepSessionFlow, GepCartFlow, GepCheckoutFlow, GepOrderHistoryFlow
   utils/       dataHelpers (random data, dates, cache-buster), GepDatePicker (picks a date in any calendar field)
-data/          testCases.ts, marketData.ts (products, expected status), common.ts, orderStatus.ts
+data/          testCases.ts, marketData.ts (products, expected status per env + market), common.ts, orderStatus.ts
+db/            schema.sql: tables of the test data database (site profiles and login users)
 fixtures/      gepFixtures.ts: gives each test its market, pages and flows
 tests/         orders/GEP_Orders.spec.ts (order placement + order history)
 scripts/       generate-locators-report.js (builds LOCATORS_TODO.md)
@@ -45,8 +46,8 @@ test('GEP2-36899 | Verify submitted order in My order page @GEP2-36899 ...', asy
   // Open the site for the selected market and close the cookie / domain / launch popups.
   await test.step('Step 1: Launch the website and clear the launch popups', () => session.openSite());
 
-  // Sign in with the user from .env and wait until the account menu shows.
-  await test.step('Step 2: Sign in', () => session.login(GEP2_36899.tcId));
+  // Sign in with the market's default user (test data database) and wait until the account menu shows.
+  await test.step('Step 2: Sign in', () => session.login());
   ...
   // Click "Submit Your Order", check "Your order has been submitted" and read the order number.
   const orderNumber = await test.step('Step 10: Submit the order and capture the order number', () => checkout.submitOrder());
@@ -118,36 +119,68 @@ code of its own (e.g. "close the browser") needs `// @flow-deviation <steps>: <r
 ```bash
 npm ci
 npx playwright install chromium
-cp .env.example .env      # then fill in the credentials
+cp .env.example .env      # then fill in the database connection
 ```
 
-`.env` is gitignored. It holds the market to run and the logins, never code or site data:
+`.env` is gitignored. It holds the environment and market to run and the database connection, never code or site data:
 
 ```
-MARKET=us-qa
-US_QA_APP_USERNAME=...
-US_QA_APP_PASSWORD=...
+TEST_ENV=qa
+MARKET=us
+DB_SERVER=localhost
+DB_NAME=GEP_DB
+DB_USER=gep_automation
+DB_PASSWORD=...
+DB_ENCRYPTION_KEY=...
 ```
+
+### Test data database
+
+The site of each market per environment and the login users live in a SQL Server database
+(tables in `db/schema.sql`), so switching environment is a matter of rows, not code:
+
+```
+TEST_ENV + MARKET  ->  environments   (base_url, country, domain, region, date_format)
+                   ->  test_accounts  (active user with user_key 'default', password decrypted with DB_ENCRYPTION_KEY)
+```
+
+- A test signs in as the `default` user; `session.login('admin')` signs in as the user with `user_key = 'admin'`.
+  Only one active user per env + market + user_key is allowed.
+- Passwords are stored encrypted (`ENCRYPTBYPASSPHRASE`) and decrypted in memory at sign-in; they are never written to disk.
+- `npm run db:check` checks the connection and the rows for `TEST_ENV` (read-only, prints no passwords).
+- Without `DB_SERVER` (or when the database is unreachable on QA) the tests use the QA profiles in
+  `src/config/markets.ts` and `<MARKET>_<ENV>_APP_USERNAME` / `_APP_PASSWORD` from `.env`, e.g. `US_QA_APP_USERNAME`.
 
 ## Running
 
 | Command | What it does |
 |---|---|
-| `npm test` | Everything: the GEP tests on the market(s) in `MARKET` (default `us-qa`) plus the Demo Web Shop tests |
+| `npm test` | Everything: the GEP tests on the market(s) in `MARKET` (default `us`) of `TEST_ENV` (default `qa`) plus the Demo Web Shop tests |
 | `npm run test:orders` | The GEP order tests |
 | `npm run test:demo` | The Demo Web Shop tests (project `demo-webshop`) |
 | `npx playwright test --grep @GEP2-36899` | One test case |
 | `npm run report` | Open the last HTML report (also `monocart-report/index.html`) |
 | `npm run check` | Type check + list tests (what CI runs) |
 | `npm run locators` | Rebuild `LOCATORS_TODO.md` from the code |
+| `npm run db:check` | Check the test data database for `TEST_ENV` |
 
-Switch market by changing `MARKET` in `.env`, e.g. `MARKET=uk-dental-qa` or `MARKET=us-qa,uk-dental-qa`
-(runs every test on both). Browsers are visible locally; set `HEADLESS=true` to hide them (CI is always headless).
+Switch market by changing `MARKET` in `.env`, e.g. `MARKET=uk-dental` or `MARKET=us,uk-dental`
+(runs every test on both; projects are named `<env>-<market>`, e.g. `qa-us`). The old ids `us-qa`, `uk-dental-qa` and
+`uk-medical-qa` still work and mean QA.
+
+Switch environment with `TEST_ENV` (`qa`, `uat`, `prod`); a value set in the shell wins over `.env`. To run
+environments side by side, start one run per environment, e.g. in PowerShell `$env:TEST_ENV='uat'; npx playwright test`.
+QA writes to the usual `test-results/`, `playwright-report/` and `monocart-report/`; other environments write to
+`<folder>-<env>`, so parallel runs don't overwrite each other. Each run still uses one worker, because the tests on one
+market share one account and cart. `TEST_ENV=prod` refuses to start without `ALLOW_PROD=true` and then runs only tests
+tagged `@prod-safe` (GEP tests place real orders). UAT and prod need their rows in the database and their products in
+`data/marketData.ts`. Browsers are visible locally; set `HEADLESS=true` to hide them (CI is always headless).
 Headed runs open a maximised window that fits your screen; headless runs use a fixed 1920x1080 viewport.
 
 ## Adding a test case
 
-1. Add its fixed data to `data/testCases.ts` (and market-dependent data to `data/marketData.ts`).
+1. Add its fixed data to `data/testCases.ts` (and market-dependent data to `data/marketData.ts`). A test that needs a
+   special account adds a `test_accounts` row with its own `user_key` and calls `session.login('<user_key>')`.
 2. Write the test in the feature spec under `tests/` (order tests go in `tests/orders/GEP_Orders.spec.ts`), using the flows. Title: `GEP2-xxxxx | <Jira title> @GEP2-xxxxx @<feature>`.
    Wrap every line in `await test.step('Step N: <what it does>', ...)` with a one-line comment above it.
 3. New screen or control? Add a `private` getter to the page or component with a `// Tosca:` comment, and a

@@ -10,7 +10,7 @@ import path from 'path';
  *
  * @manual manual-test-cases/TC02_Demowebshop_Verify_Digital_Download.md
  */
-test.describe.only('Demo Web Shop - Product Management', () => {
+test.describe('Demo Web Shop - Product Management', () => {
   test.describe.configure({ timeout: DEMO_TEST_TIMEOUT });
 
   test(`${DEMO_TC02.toscaName} @${DEMO_TC02.tcId} @demo @productManagement`, async ({ session, header, homePage, categoryPage, productPage }) => {

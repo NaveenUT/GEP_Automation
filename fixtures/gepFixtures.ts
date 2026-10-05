@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test';
-import type { Market, MarketId } from '../src/config/markets';
+import type { Market, MarketId, TestEnv } from '../src/config/markets';
 import { resolveMarket } from '../src/config/env';
 import { regionFor, type RegionBehaviour } from '../src/regions';
 import { GepHeader } from '../src/components/GepHeader';
@@ -20,8 +20,9 @@ import { GepCheckoutFlow } from '../src/flows/GepCheckoutFlow';
 import { GepOrderHistoryFlow } from '../src/flows/GepOrderHistoryFlow';
 import { getMarketData, type MarketData } from '../data/marketData';
 
-/** Set per Playwright project in playwright.config.ts (one project per market). */
+/** Set per Playwright project in playwright.config.ts (one project per environment + market). */
 export type GepOptions = {
+  testEnv: TestEnv;
   marketId: MarketId;
 };
 
@@ -56,10 +57,11 @@ type GepFixtures = {
  * Tests import `test` and `expect` from here instead of from @playwright/test.
  */
 export const test = base.extend<GepOptions & GepFixtures>({
-  marketId: ['us-qa', { option: true }],
+  testEnv: ['qa', { option: true }],
+  marketId: ['us', { option: true }],
 
-  market: async ({ marketId }, use) => use(resolveMarket(marketId)),
-  marketData: async ({ marketId }, use) => use(getMarketData(marketId)),
+  market: async ({ testEnv, marketId }, use) => use(await resolveMarket(marketId, testEnv)),
+  marketData: async ({ testEnv, marketId }, use) => use(getMarketData(testEnv, marketId)),
   region: async ({ market }, use) => use(regionFor(market.region)),
 
   header: async ({ page }, use) => use(new GepHeader(page)),

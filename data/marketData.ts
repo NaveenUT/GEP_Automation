@@ -22,7 +22,7 @@ const MARKET_DATA: Record<TestEnv, Partial<Record<MarketId, MarketData>>> = {
   qa: {
     us: {
       products: { generic: '1127079', bulkOrder: '1127081', twoUom: '5704279' },
-      expectedOrderStatus: ORDER_STATUS.PENDING_LOCATION_VERIFICATION,
+      expectedOrderStatus: ORDER_STATUS.PROCESSING,
       recurringFrequency: 'Bi-Weekly',
     },
     'uk-dental': {

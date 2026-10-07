@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { GepOptions } from './fixtures/gepFixtures';
-import { ENV, demoWebshopUrl, selectedMarketIds, selectedTestEnv } from './src/config/env';
+import { ENV, selectedMarketIds, selectedTestEnv } from './src/config/env';
 
 // Headless (CI, HEADLESS=true): fixed 1920x1080 so every run renders the same layout.
 // Headed (local): a maximised window sized to the screen, so the whole page stays in view.
@@ -49,7 +49,6 @@ export default defineConfig<GepOptions>({
     // The site URL comes from the test data database (market fixture), so there is no baseURL here.
     ...selectedMarketIds(testEnv).map((marketId) => ({
       name: `${testEnv}-${marketId}`,
-      testIgnore: '**/demo/**',
       // GEP tests place real orders: on prod only the tests tagged @prod-safe run.
       ...(testEnv === 'prod' ? { grep: /@prod-safe/ } : {}),
       use: {
@@ -59,16 +58,6 @@ export default defineConfig<GepOptions>({
         marketId,
       },
     })),
-    // Demo Web Shop (second application): only tests/demo. Run with --project=demo-webshop.
-    {
-      name: 'demo-webshop',
-      testDir: './tests/demo',
-      use: {
-        ...desktopChrome,
-        ...browserWindow,
-        baseURL: demoWebshopUrl(),
-      },
-    },
   ],
 
   outputDir: runFolder('test-results'),

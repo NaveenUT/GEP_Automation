@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const SOURCE_DIRS = ['src/components', 'src/pages', 'src/utils', 'src/demo'];
+const SOURCE_DIRS = ['src/components', 'src/pages', 'src/utils'];
 
 function listFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

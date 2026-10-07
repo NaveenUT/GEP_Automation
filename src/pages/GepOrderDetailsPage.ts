@@ -35,10 +35,16 @@ export class GepOrderDetailsPage extends BasePage {
   /** Tosca: Click the Reorder link in the order details page, then Close the Reorder Modal. */
   async reorder(): Promise<void> {
     await this.expectVisible(this.reorderLink);
+    await this.page.waitForTimeout(3000);
     await this.click(this.reorderLink);
-    await this.expectVisible(this.reorderDialogCloseButton);
+    await this.expectVisible(this.reorderDialogCloseButton); // wait for the modal to be fully loaded before closing it
     await this.click(this.reorderDialogCloseButton);
     await this.expectHidden(this.reorderDialogCloseButton);
+  }
+
+  /** Wait for the View & Track page to finish loading before checking its content. */
+  async waitForLoaded(): Promise<void> {
+    await this.page.waitForLoadState('load');
   }
 
   /** Tosca: Verify the Status in order details page ({STRINGTOLOWER} on both sides, so case-insensitive). */

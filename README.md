@@ -177,27 +177,6 @@ tagged `@prod-safe` (GEP tests place real orders). UAT and prod need their rows 
 `data/marketData.ts`. Browsers are visible locally; set `HEADLESS=true` to hide them (CI is always headless).
 Headed runs open a maximised window that fits your screen; headless runs use a fixed 1920x1080 viewport.
 
-## Running in Jenkins
-
-The `Jenkinsfile` runs the tests on the local Jenkins (http://localhost:9090), by hand only (**Build with Parameters**):
-`TEST_ENV`, `MARKET`, `TESTS` (grep filter), `SIGN_IN_ONCE`, `HEADLESS`. Like `e2e.yml` it forces `--retries=0`
-and never runs two builds at once, because every test places a real order.
-
-One-time setup:
-
-1. **Manage Jenkins > Plugins**: Pipeline, Git, Credentials Binding, JUnit, HTML Publisher, Timestamper.
-2. Node.js 20+ on the PATH of the Jenkins agent (restart Jenkins after installing Node).
-3. **Manage Jenkins > Credentials > System > Global > Add Credentials**: kind *Secret file*, ID `gep-env`,
-   file = your `.env`. It is copied into the workspace for the run and deleted afterwards.
-4. **New Item > Pipeline**, then *Pipeline script from SCM*: Git, `https://github.com/NaveenUT/GEP_Automation.git`
-   (add GitHub credentials if the repo is private), branch `*/Branch_GEP`, script path `Jenkinsfile`.
-5. To let the Playwright and Monocart HTML reports run their JavaScript inside Jenkins, run once in
-   **Manage Jenkins > Script Console**: `System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")`
-   (resets on restart; add `-Dhudson.model.DirectoryBrowserSupport.CSP=` to the Jenkins service arguments to keep it).
-
-Each build shows the JUnit results, **Playwright Report** and **Monocart Report** links, and archives `test-results/`
-(screenshots, videos, traces). Failed tests mark the build *unstable*, not failed.
-
 ## Adding a test case
 
 1. Add its fixed data to `data/testCases.ts` (and market-dependent data to `data/marketData.ts`). A test that needs a

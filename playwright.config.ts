@@ -32,6 +32,8 @@ export default defineConfig<GepOptions>({
     ['html', { outputFolder: runFolder('playwright-report'), open: 'never' }],
     ['monocart-reporter', { name: 'Automation Test Report', outputFile: `${runFolder('monocart-report')}/index.html` }],
     ['json', { outputFile: `${runFolder('test-results')}/results.json` }],
+    // JUnit XML for Jenkins (test trend and per-test results on the build page).
+    ['junit', { outputFile: `${runFolder('test-results')}/junit.xml` }],
   ],
 
   use: {
